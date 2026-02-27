@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const metadata: Metadata = {
   title: "我的个人网站",
@@ -15,6 +17,8 @@ export default function RootLayout({
     <html lang="zh-CN">
       <body className="antialiased">
         {children}
+        <ThemeToggle />
+        <Analytics />
       </body>
     </html>
   );
