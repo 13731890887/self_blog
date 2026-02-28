@@ -1,0 +1,152 @@
+---
+title: "使用 Cloudflare Pages 免费部署个人网站"
+date: "2025-02-28"
+excerpt: "详细介绍如何使用 Cloudflare Pages 免费部署静态网站，支持自定义域名和全球 CDN 加速。"
+tags: ["Cloudflare", "部署", "教程", "免费"]
+author: "Seqi"
+---
+
+## 什么是 Cloudflare Pages？
+
+Cloudflare Pages 是 Cloudflare 提供的**免费静态网站托管服务**，具有以下特点：
+
+- 🌍 **全球 CDN** - 300+ 节点遍布全球
+- 💰 **完全免费** - 无限制的带宽和请求
+- 🚀 **自动部署** - 连接 GitHub，推送代码自动构建
+- 🔒 **免费 HTTPS** - 自动配置 SSL 证书
+- 📱 **无限站点** - 可以部署多个网站
+
+---
+
+## 快速开始
+
+### 第一步：注册 Cloudflare
+
+1. 访问 [dash.cloudflare.com](https://dash.cloudflare.com/sign-up)
+2. 使用邮箱或 GitHub/Google 账号注册
+
+### 第二步：连接 GitHub 仓库
+
+1. 登录后，点击左侧菜单 **Workers & Pages**
+2. 点击 **Create application**
+3. 选择 **Pages** → **Connect to Git**
+4. 授权 Cloudflare 访问你的 GitHub
+5. 选择要部署的仓库
+
+### 第三步：配置构建设置
+
+根据你的项目类型，填写构建配置：
+
+#### Next.js 项目
+
+```yaml
+构建命令: npm run build
+构建输出目录: dist
+Node.js 版本: 20
+```
+
+#### 纯静态 HTML
+
+```yaml
+构建命令: (留空)
+构建输出目录: (根目录或 public)
+```
+
+#### Vite/Vue/React
+
+```yaml
+构建命令: npm run build
+构建输出目录: dist
+```
+
+### 第四步：开始部署
+
+点击 **Save and Deploy**，Cloudflare 会：
+
+1. 克隆你的代码
+2. 运行构建命令
+3. 部署到全球 CDN
+
+**1-2 分钟后**，你的网站就上线了！
+
+你会得到一个地址，比如：`https://your-project.pages.dev`
+
+---
+
+## 绑定自定义域名
+
+### 方式一：域名已托管在 Cloudflare（推荐）
+
+如果你的域名 nameserver 已经是 Cloudflare 的：
+
+1. 在 Pages 项目中点击 **Custom domains**
+2. 输入你的域名（如 `blog.yourdomain.com`）
+3. 点击 **Add domain**
+4. Cloudflare 自动添加 DNS 记录
+
+### 方式二：域名在其他服务商
+
+1. 在 Pages 项目中添加自定义域名
+2. Cloudflare 会给你一个 CNAME 记录
+3. 去你的域名服务商添加这个记录：
+
+```
+类型: CNAME
+名称: blog
+目标: your-project.pages.dev
+```
+
+---
+
+## 环境变量配置
+
+如果你的项目需要环境变量：
+
+1. 在项目 **Settings** → **Environment variables**
+2. 添加变量：
+
+```
+NODE_VERSION = 20
+API_KEY = your_api_key
+```
+
+---
+
+## 常见问题
+
+### Q: Cloudflare Pages 真的完全免费吗？
+
+A: 是的！对于个人博客和小型项目：
+- ✅ 无限请求次数
+- ✅ 无限带宽
+- ✅ 无限站点数量
+- 每个站点每月 **500 次构建**
+
+### Q: 国内访问速度快吗？
+
+A: Cloudflare 在中国大陆有节点，访问速度较好。如果需要更快的速度，可以考虑同时部署到 Gitee Pages。
+
+### Q: 可以部署动态网站吗？
+
+A: Cloudflare Pages 主要用于静态网站。但你可以：
+- 使用 Cloudflare Workers 添加 Serverless 函数
+- 调用外部 API
+
+### Q: 如何回滚到之前的版本？
+
+A: 在 **Deployments** 页面，可以看到所有历史版本，点击 **Rollback** 即可回滚。
+
+---
+
+## 总结
+
+Cloudflare Pages 是托管个人博客的最佳选择之一：
+
+| 特性 | Cloudflare Pages | Vercel | GitHub Pages |
+|------|------------------|--------|--------------|
+| 费用 | 完全免费 | 免费额度有限 | 免费 |
+| 国内访问 | 较快 | 不稳定 | 慢 |
+| 自定义域名 | 支持 | 支持 | 支持 |
+| 构建次数 | 500次/月 | 有限制 | 无限制 |
+
+开始你的部署之旅吧！🚀
