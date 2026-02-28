@@ -13,6 +13,7 @@
 # next.js
 /.next/
 /out/
+/dist
 
 # production
 /build
@@ -28,7 +29,14 @@ yarn-error.log*
 
 # local env files
 .env*.local
+.env
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

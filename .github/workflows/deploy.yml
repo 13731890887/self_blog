@@ -1,0 +1,90 @@
+name: Deploy to Tencent Cloud
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: "20"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: out/
+          retention-days: 1
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+          path: out/
+
+      # 安装腾讯云 CLI
+      - name: Install TencentCloud CLI
+        run: |
+          curl -sL https://webcdn.tencent-cloud.com/developer/agency/terraform/install-scripts/install-terraform-cli.sh | bash
+          pip3 install tccli
+
+      # 上传到腾讯云 COS
+      - name: Deploy to Tencent COS
+        run: |
+          pip3 install coscmd
+          echo "${{ secrets.TENCENT_COS_CONFIG }}" | base64 -d > ~/.cos.conf
+          coscmd upload -r out/ / --ignore ./out/.nojekyll
+        env:
+          SECRET_ID: ${{ secrets.TENCENT_SECRET_ID }}
+          SECRET_KEY: ${{ secrets.TENCENT_SECRET_KEY }}
+          BUCKET: ${{ secrets.TENCENT_COS_BUCKET }}
+          REGION: ${{ secrets.TENCENT_COS_REGION }}
+
+      # 刷新 CDN 缓存
+      - name: Purge CDN Cache
+        run: |
+          tccli cdn PurgePathCache --version 2018-06-06 \
+            --Region '${{ secrets.TENCENT_CDN_REGION }}' \
+            --Paths '["https://${{ secrets.CDN_DOMAIN }}/*"]' \
+            --FlushType 'delete'
+        env:
+          TENCENT_SECRET_ID: ${{ secrets.TENCENT_SECRET_ID }}
+          TENCENT_SECRET_KEY: ${{ secrets.TENCENT_SECRET_KEY }}
+        continue-on-error: true
+
+      # 部署完成通知
+      - name: Deployment summary
+        run: |
+          echo "## 🚀 部署成功!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **提交**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **分支**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **时间**: $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
