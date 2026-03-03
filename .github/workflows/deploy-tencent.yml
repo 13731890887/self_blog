@@ -1,0 +1,59 @@
+name: Deploy to Tencent COS
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: "20"
+
+jobs:
+  deploy-tencent:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build static files
+        run: npm run build
+
+      - name: Install Tencent tools
+        run: |
+          pip3 install --upgrade pip
+          pip3 install coscmd tccli
+
+      - name: Configure coscmd
+        run: |
+          cat > ~/.cos.conf <<EOF
+          [common]
+          secret_id = ${{ secrets.TENCENT_SECRET_ID }}
+          secret_key = ${{ secrets.TENCENT_SECRET_KEY }}
+          bucket = ${{ secrets.TENCENT_COS_BUCKET }}
+          region = ${{ secrets.TENCENT_COS_REGION }}
+          scheme = https
+          EOF
+
+      - name: Upload to Tencent COS
+        run: coscmd upload -rs --delete out/ /
+
+      - name: Purge Tencent CDN cache
+        if: ${{ secrets.CDN_DOMAIN != '' && secrets.TENCENT_CDN_REGION != '' }}
+        env:
+          TENCENT_SECRET_ID: ${{ secrets.TENCENT_SECRET_ID }}
+          TENCENT_SECRET_KEY: ${{ secrets.TENCENT_SECRET_KEY }}
+        run: |
+          tccli cdn PurgePathCache --version 2018-06-06 \
+            --Region "${{ secrets.TENCENT_CDN_REGION }}" \
+            --Paths "[\"https://${{ secrets.CDN_DOMAIN }}/*\"]" \
+            --FlushType delete
