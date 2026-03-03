@@ -15,7 +15,7 @@ export function Giscus() {
         reactionsEnabled="1"
         emitMetadata="0"
         inputPosition="top"
-        theme="preferred_color_scheme"
+        theme="dark_dimmed"
         lang="zh-CN"
         loading="lazy"
       />
