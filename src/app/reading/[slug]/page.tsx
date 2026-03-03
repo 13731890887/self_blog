@@ -35,13 +35,13 @@ export default async function ReadingPost({
   if (!book) notFound();
 
   return (
-    <main style={{ background: "#080b0f", minHeight: "100vh", paddingTop: "56px" }}>
+    <main style={{ minHeight: "100vh", paddingTop: "56px" }}>
       <article style={{ maxWidth: "800px", margin: "0 auto", padding: "48px 24px" }}>
         <Link
           href="/reading"
           style={{
             fontSize: "13px",
-            color: "#bf5af2",
+            color: "var(--purple)",
             fontFamily: "var(--font-mono, monospace)",
             textDecoration: "none",
             display: "inline-block",
@@ -57,7 +57,7 @@ export default async function ReadingPost({
               fontFamily: "var(--font-mono, JetBrains Mono, monospace)",
               fontSize: "clamp(1.75rem, 4vw, 2.5rem)",
               fontWeight: 700,
-              color: "#e2e8f0",
+              color: "var(--text-primary)",
               margin: "0 0 8px 0",
               lineHeight: 1.2,
             }}
@@ -67,7 +67,7 @@ export default async function ReadingPost({
           <p
             style={{
               fontSize: "16px",
-              color: "#7fa3bf",
+              color: "var(--text-secondary)",
               margin: "0 0 16px 0",
             }}
           >
@@ -86,7 +86,7 @@ export default async function ReadingPost({
                 <span
                   key={star}
                   style={{
-                    color: star <= book.rating ? "#bf5af2" : "#7fa3bf",
+                    color: star <= book.rating ? "var(--purple)" : "var(--text-secondary)",
                     fontSize: "16px",
                   }}
                 >
@@ -97,7 +97,7 @@ export default async function ReadingPost({
             <time
               style={{
                 fontSize: "13px",
-                color: "#7fa3bf",
+                color: "var(--text-secondary)",
                 fontFamily: "var(--font-mono, monospace)",
               }}
             >
@@ -112,9 +112,9 @@ export default async function ReadingPost({
                   style={{
                     fontSize: "11px",
                     padding: "2px 8px",
-                    border: "1px solid rgba(191, 90, 242, 0.3)",
+                    border: "1px solid rgba(200, 169, 107, 0.3)",
                     borderRadius: "2px",
-                    color: "#bf5af2",
+                    color: "var(--purple)",
                     fontFamily: "var(--font-mono, monospace)",
                   }}
                 >
@@ -127,12 +127,12 @@ export default async function ReadingPost({
             style={{
               marginTop: "20px",
               padding: "16px",
-              borderLeft: "3px solid #bf5af2",
-              background: "rgba(191, 90, 242, 0.05)",
+              borderLeft: "3px solid var(--purple)",
+              background: "rgba(200, 169, 107, 0.09)",
               borderRadius: "0 4px 4px 0",
             }}
           >
-            <p style={{ color: "#7fa3bf", fontStyle: "italic", margin: 0, lineHeight: 1.7 }}>
+            <p style={{ color: "var(--text-secondary)", fontStyle: "italic", margin: 0, lineHeight: 1.7 }}>
               {book.excerpt}
             </p>
           </div>
@@ -146,14 +146,14 @@ export default async function ReadingPost({
           style={{
             marginTop: "64px",
             paddingTop: "32px",
-            borderTop: "1px solid rgba(191, 90, 242, 0.15)",
+            borderTop: "1px solid rgba(200, 169, 107, 0.2)",
           }}
         >
           <Link
             href="/reading"
             style={{
               fontSize: "13px",
-              color: "#bf5af2",
+              color: "var(--purple)",
               fontFamily: "var(--font-mono, monospace)",
               textDecoration: "none",
             }}

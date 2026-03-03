@@ -6,11 +6,11 @@ export default function ReadingPage() {
   const books = getAllBooks();
 
   return (
-    <main style={{ background: "#080b0f", minHeight: "100vh", paddingTop: "56px" }}>
+    <main style={{ minHeight: "100vh", paddingTop: "56px" }}>
       <div style={{ maxWidth: "1000px", margin: "0 auto", padding: "48px 24px" }}>
         <PageHeader
-          title="书目陈列室"
-          subtitle="阅读是最廉价的旅行"
+          title="阅读"
+          subtitle="每本书保留一个最有行动价值的收获"
           path="/reading"
         />
 
@@ -31,7 +31,7 @@ export default function ReadingPage() {
             style={{
               padding: "48px",
               textAlign: "center",
-              color: "#7fa3bf",
+              color: "var(--text-secondary)",
               fontFamily: "var(--font-mono, monospace)",
               fontSize: "14px",
             }}

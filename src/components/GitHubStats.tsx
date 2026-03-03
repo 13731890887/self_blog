@@ -29,7 +29,7 @@ function Skeleton({ width, height }: { width: string; height: string }) {
       style={{
         width,
         height,
-        background: 'rgba(0, 212, 255, 0.05)',
+        background: 'rgba(94, 194, 183, 0.08)',
         borderRadius: '4px',
         animation: 'pulse 1.5s ease-in-out infinite',
       }}
@@ -58,7 +58,7 @@ export function GitHubStats({ username = "seqi" }: GitHubStatsProps) {
 
         setUser(userData);
         setRepos(Array.isArray(reposData) ? reposData : []);
-      } catch (err) {
+      } catch {
         setError("无法加载 GitHub 数据");
       } finally {
         setLoading(false);
@@ -75,7 +75,7 @@ export function GitHubStats({ username = "seqi" }: GitHubStatsProps) {
       <div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '32px' }}>
           {[1, 2, 3].map((i) => (
-            <div key={i} style={{ background: '#0d1117', border: '1px solid rgba(0, 212, 255, 0.2)', borderRadius: '4px', padding: '24px' }}>
+            <div key={i} style={{ background: 'var(--bg-secondary)', border: '1px solid rgba(94, 194, 183, 0.22)', borderRadius: '4px', padding: '24px' }}>
               <Skeleton width="40px" height="32px" />
               <div style={{ marginTop: '8px' }}><Skeleton width="80px" height="16px" /></div>
             </div>
@@ -83,7 +83,7 @@ export function GitHubStats({ username = "seqi" }: GitHubStatsProps) {
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} style={{ background: '#0d1117', border: '1px solid rgba(0, 212, 255, 0.2)', borderRadius: '4px', padding: '20px' }}>
+            <div key={i} style={{ background: 'var(--bg-secondary)', border: '1px solid rgba(94, 194, 183, 0.22)', borderRadius: '4px', padding: '20px' }}>
               <Skeleton width="60%" height="20px" />
               <div style={{ marginTop: '8px' }}><Skeleton width="90%" height="14px" /></div>
             </div>
@@ -95,7 +95,7 @@ export function GitHubStats({ username = "seqi" }: GitHubStatsProps) {
 
   if (error) {
     return (
-      <div style={{ padding: '24px', border: '1px solid rgba(0, 212, 255, 0.2)', borderRadius: '4px', color: '#00d4ff', fontFamily: 'monospace' }}>
+      <div style={{ padding: '24px', border: '1px solid rgba(94, 194, 183, 0.22)', borderRadius: '4px', color: 'var(--cyan)', fontFamily: 'monospace' }}>
         {error}
       </div>
     );
@@ -115,17 +115,17 @@ export function GitHubStats({ username = "seqi" }: GitHubStatsProps) {
           <div
             key={stat.label}
             style={{
-              background: '#0d1117',
-              border: '1px solid rgba(0, 212, 255, 0.2)',
+              background: 'var(--bg-secondary)',
+              border: '1px solid rgba(94, 194, 183, 0.22)',
               borderRadius: '4px',
               padding: '24px',
               textAlign: 'center',
             }}
           >
-            <div style={{ fontSize: '32px', fontWeight: 700, color: '#00d4ff', fontFamily: 'var(--font-mono, monospace)', marginBottom: '4px' }}>
+            <div style={{ fontSize: '32px', fontWeight: 700, color: 'var(--cyan)', fontFamily: 'var(--font-mono, monospace)', marginBottom: '4px' }}>
               {stat.value}
             </div>
-            <div style={{ fontSize: '13px', color: '#7fa3bf' }}>{stat.label}</div>
+            <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{stat.label}</div>
           </div>
         ))}
       </div>
@@ -133,7 +133,7 @@ export function GitHubStats({ username = "seqi" }: GitHubStatsProps) {
       {/* Repos */}
       {repos.length > 0 && (
         <div>
-          <h3 style={{ fontFamily: 'var(--font-mono, monospace)', fontSize: '16px', color: '#7fa3bf', marginBottom: '16px' }}>
+          <h3 style={{ fontFamily: 'var(--font-mono, monospace)', fontSize: '16px', color: 'var(--text-secondary)', marginBottom: '16px' }}>
             热门项目
           </h3>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
@@ -147,32 +147,32 @@ export function GitHubStats({ username = "seqi" }: GitHubStatsProps) {
               >
                 <div
                   style={{
-                    background: '#0d1117',
-                    border: '1px solid rgba(0, 212, 255, 0.2)',
+                    background: 'var(--bg-secondary)',
+                    border: '1px solid rgba(94, 194, 183, 0.22)',
                     borderRadius: '4px',
                     padding: '20px',
                     transition: 'all 0.2s ease',
                   }}
                   onMouseEnter={(e) => {
                     const el = e.currentTarget;
-                    el.style.borderColor = 'rgba(0, 212, 255, 0.5)';
-                    el.style.boxShadow = '0 0 15px rgba(0, 212, 255, 0.1)';
+                    el.style.borderColor = 'rgba(94, 194, 183, 0.48)';
+                    el.style.boxShadow = '0 0 15px rgba(94, 194, 183, 0.1)';
                   }}
                   onMouseLeave={(e) => {
                     const el = e.currentTarget;
-                    el.style.borderColor = 'rgba(0, 212, 255, 0.2)';
+                    el.style.borderColor = 'rgba(94, 194, 183, 0.22)';
                     el.style.boxShadow = 'none';
                   }}
                 >
-                  <div style={{ fontFamily: 'var(--font-mono, monospace)', fontSize: '15px', color: '#00d4ff', marginBottom: '6px' }}>
+                  <div style={{ fontFamily: 'var(--font-mono, monospace)', fontSize: '15px', color: 'var(--cyan)', marginBottom: '6px' }}>
                     {repo.name}
                   </div>
                   {repo.description && (
-                    <div style={{ fontSize: '13px', color: '#7fa3bf', marginBottom: '12px', lineHeight: 1.5 }}>
+                    <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px', lineHeight: 1.5 }}>
                       {repo.description}
                     </div>
                   )}
-                  <div style={{ display: 'flex', gap: '16px', fontSize: '12px', color: '#7fa3bf' }}>
+                  <div style={{ display: 'flex', gap: '16px', fontSize: '12px', color: 'var(--text-secondary)' }}>
                     {repo.language && <span>{repo.language}</span>}
                     <span>★ {repo.stargazers_count}</span>
                   </div>

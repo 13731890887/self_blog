@@ -29,10 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-CN" className={`${jetbrainsMono.variable} ${spaceGrotesk.variable}`}>
-      <body
-        style={{ background: "#080b0f", color: "#e2e8f0" }}
-        className="antialiased"
-      >
+      <body className="antialiased">
         <ScanlineBackground />
         <Navigation />
         {children}

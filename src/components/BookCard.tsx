@@ -14,7 +14,7 @@ function StarRating({ rating }: { rating: number }) {
         <span
           key={star}
           style={{
-            color: star <= rating ? '#00d4ff' : '#7fa3bf',
+            color: star <= rating ? 'var(--purple)' : 'var(--text-secondary)',
             fontSize: '14px',
           }}
         >
@@ -30,21 +30,21 @@ export function BookCard({ book }: BookCardProps) {
     <Link href={`/reading/${book.slug}`} style={{ textDecoration: 'none', display: 'block' }}>
       <div
         style={{
-          background: '#0d1117',
-          border: '1px solid rgba(0, 212, 255, 0.2)',
-          borderRadius: '4px',
+          background: 'var(--bg-secondary)',
+          border: '1px solid rgba(94, 194, 183, 0.22)',
+          borderRadius: '8px',
           padding: '24px',
           transition: 'all 0.2s ease',
           height: '100%',
         }}
         onMouseEnter={(e) => {
           const el = e.currentTarget;
-          el.style.borderColor = 'rgba(0, 212, 255, 0.5)';
-          el.style.boxShadow = '0 0 20px rgba(0, 212, 255, 0.1)';
+          el.style.borderColor = 'rgba(94, 194, 183, 0.48)';
+          el.style.boxShadow = '0 0 20px rgba(94, 194, 183, 0.1)';
         }}
         onMouseLeave={(e) => {
           const el = e.currentTarget;
-          el.style.borderColor = 'rgba(0, 212, 255, 0.2)';
+          el.style.borderColor = 'rgba(94, 194, 183, 0.22)';
           el.style.boxShadow = 'none';
         }}
       >
@@ -53,20 +53,20 @@ export function BookCard({ book }: BookCardProps) {
             fontFamily: 'var(--font-mono, JetBrains Mono, monospace)',
             fontSize: '18px',
             fontWeight: 600,
-            color: '#e2e8f0',
+            color: 'var(--text-primary)',
             marginBottom: '6px',
           }}
         >
           {book.title}
         </h3>
-        <p style={{ fontSize: '13px', color: '#7fa3bf', marginBottom: '12px' }}>
+        <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px' }}>
           {book.author}
         </p>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
           <StarRating rating={book.rating} />
-          <span style={{ fontSize: '12px', color: '#7fa3bf' }}>{book.readDate}</span>
+          <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{book.readDate}</span>
         </div>
-        <p style={{ fontSize: '14px', color: '#7fa3bf', marginBottom: '12px', lineHeight: 1.6 }}>
+        <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '12px', lineHeight: 1.6 }}>
           {book.excerpt}
         </p>
         {book.tags && book.tags.length > 0 && (
@@ -77,9 +77,9 @@ export function BookCard({ book }: BookCardProps) {
                 style={{
                   fontSize: '11px',
                   padding: '2px 8px',
-                  border: '1px solid rgba(0, 212, 255, 0.3)',
+                  border: '1px solid rgba(94, 194, 183, 0.3)',
                   borderRadius: '2px',
-                  color: '#00d4ff',
+                  color: 'var(--cyan)',
                   fontFamily: 'var(--font-mono, JetBrains Mono, monospace)',
                 }}
               >

@@ -34,6 +34,10 @@ export function getAllPosts(): Post[] {
         coverImage: data.coverImage,
         tags: data.tags || [],
         author: data.author || "Seqi",
+        background: data.background || "",
+        problem: data.problem || "",
+        conclusion: data.conclusion || "",
+        audience: data.audience || "",
       } as Post;
     });
 
@@ -72,6 +76,10 @@ export function getPostBySlug(slug: string): Post | null {
       coverImage: data.coverImage,
       tags: data.tags || [],
       author: data.author || "Seqi",
+      background: data.background || "",
+      problem: data.problem || "",
+      conclusion: data.conclusion || "",
+      audience: data.audience || "",
     } as Post;
   } catch {
     return null;

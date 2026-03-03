@@ -5,10 +5,9 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 const navLinks = [
-  { href: "/", label: "入口大厅" },
-  { href: "/lab", label: "技术展厅" },
-  { href: "/reading", label: "书目陈列室" },
-  { href: "/achievements", label: "荣誉殿堂" },
+  { href: "/", label: "首页" },
+  { href: "/blog", label: "文章" },
+  { href: "/reading", label: "阅读" },
   { href: "/guestbook", label: "留言墙" },
   { href: "/about", label: "关于我" },
 ];
@@ -30,8 +29,10 @@ export function Navigation() {
         left: 0,
         right: 0,
         zIndex: 50,
-        background: '#111820',
-        borderBottom: '1px solid rgba(0, 212, 255, 0.15)',
+        background: '#000000',
+        borderBottom: '1px solid rgba(143, 215, 206, 0.28)',
+        boxShadow: '0 10px 28px rgba(0, 0, 0, 0.34)',
+        backdropFilter: 'blur(8px)',
         height: '56px',
       }}
     >
@@ -53,7 +54,7 @@ export function Navigation() {
             fontFamily: 'var(--font-mono, JetBrains Mono, monospace)',
             fontSize: '16px',
             fontWeight: 700,
-            color: '#00d4ff',
+            color: '#d7fff8',
             textDecoration: 'none',
             letterSpacing: '0.05em',
           }}
@@ -74,19 +75,19 @@ export function Navigation() {
                 padding: '6px 12px',
                 fontSize: '13px',
                 fontFamily: 'var(--font-mono, JetBrains Mono, monospace)',
-                color: isActive(link.href) ? '#00d4ff' : '#7fa3bf',
+                color: isActive(link.href) ? '#f3fffd' : '#c6d2e6',
                 textDecoration: 'none',
-                borderBottom: isActive(link.href) ? '2px solid #00d4ff' : '2px solid transparent',
+                borderBottom: isActive(link.href) ? '2px solid #8fd7ce' : '2px solid transparent',
                 transition: 'all 0.2s ease',
               }}
               onMouseEnter={(e) => {
                 if (!isActive(link.href)) {
-                  (e.target as HTMLElement).style.color = '#e2e8f0';
+                  (e.target as HTMLElement).style.color = '#f3fffd';
                 }
               }}
               onMouseLeave={(e) => {
                 if (!isActive(link.href)) {
-                  (e.target as HTMLElement).style.color = '#7fa3bf';
+                  (e.target as HTMLElement).style.color = '#c6d2e6';
                 }
               }}
             >
@@ -102,7 +103,7 @@ export function Navigation() {
           style={{
             background: 'none',
             border: 'none',
-            color: '#00d4ff',
+            color: '#d7fff8',
             fontSize: '24px',
             cursor: 'pointer',
             padding: '4px',
@@ -118,8 +119,8 @@ export function Navigation() {
         <div
           className="md:hidden"
           style={{
-            background: '#111820',
-            borderBottom: '1px solid rgba(0, 212, 255, 0.15)',
+            background: '#000000',
+            borderBottom: '1px solid rgba(143, 215, 206, 0.28)',
             padding: '8px 0',
           }}
         >
@@ -133,7 +134,7 @@ export function Navigation() {
                 padding: '12px 24px',
                 fontSize: '14px',
                 fontFamily: 'var(--font-mono, JetBrains Mono, monospace)',
-                color: isActive(link.href) ? '#00d4ff' : '#7fa3bf',
+                color: isActive(link.href) ? '#f3fffd' : '#c6d2e6',
                 textDecoration: 'none',
               }}
             >

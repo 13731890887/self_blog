@@ -11,7 +11,7 @@ export function PageHeader({ title, subtitle, path }: PageHeaderProps) {
         style={{
           fontFamily: 'var(--font-mono, JetBrains Mono, monospace)',
           fontSize: '12px',
-          color: '#00d4ff',
+          color: 'var(--cyan)',
           marginBottom: '8px',
           letterSpacing: '0.1em',
         }}
@@ -23,7 +23,7 @@ export function PageHeader({ title, subtitle, path }: PageHeaderProps) {
           fontFamily: 'var(--font-mono, JetBrains Mono, monospace)',
           fontSize: 'clamp(2rem, 5vw, 3rem)',
           fontWeight: 700,
-          color: '#e2e8f0',
+          color: 'var(--text-primary)',
           margin: '0 0 12px 0',
           lineHeight: 1.2,
         }}
@@ -33,7 +33,7 @@ export function PageHeader({ title, subtitle, path }: PageHeaderProps) {
       <p
         style={{
           fontSize: '16px',
-          color: '#7fa3bf',
+          color: 'var(--text-secondary)',
           margin: '0 0 24px 0',
         }}
       >
@@ -42,7 +42,7 @@ export function PageHeader({ title, subtitle, path }: PageHeaderProps) {
       <div
         style={{
           height: '1px',
-          background: 'linear-gradient(to right, #00d4ff, rgba(0, 212, 255, 0.1), transparent)',
+          background: 'linear-gradient(to right, rgba(94, 194, 183, 0.55), rgba(94, 194, 183, 0.12), transparent)',
         }}
       />
     </div>

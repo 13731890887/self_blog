@@ -7,6 +7,10 @@ export interface Post {
   coverImage?: string;
   tags?: string[];
   author?: string;
+  background?: string;
+  problem?: string;
+  conclusion?: string;
+  audience?: string;
 }
 
 export interface PostMeta {
@@ -16,4 +20,8 @@ export interface PostMeta {
   coverImage?: string;
   tags?: string[];
   author?: string;
+  background?: string;
+  problem?: string;
+  conclusion?: string;
+  audience?: string;
 }

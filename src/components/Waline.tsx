@@ -36,18 +36,19 @@ export function WalineComments({ serverURL, path }: WalineProps) {
       <div
         style={{
           padding: '32px',
-          border: '1px solid rgba(0, 212, 255, 0.2)',
-          borderRadius: '4px',
+          border: '1px solid rgba(94, 194, 183, 0.22)',
+          borderRadius: '8px',
           textAlign: 'center',
-          color: '#7fa3bf',
+          color: 'var(--text-secondary)',
           fontFamily: 'var(--font-mono, monospace)',
           fontSize: '14px',
+          background: 'var(--bg-secondary)',
         }}
       >
-        <div style={{ color: '#00d4ff', marginBottom: '8px' }}>{'>'} 留言系统待配置</div>
+        <div style={{ color: 'var(--cyan)', marginBottom: '8px' }}>{'>'} 留言系统待配置</div>
         <p>请在 Cloudflare Pages 环境变量中设置 NEXT_PUBLIC_WALINE_URL</p>
         <p style={{ fontSize: '12px', marginTop: '8px' }}>
-          参考: <a href="https://waline.js.org/guide/get-started/" target="_blank" rel="noopener noreferrer" style={{ color: '#00d4ff' }}>Waline 快速上手</a>
+          参考: <a href="https://waline.js.org/guide/get-started/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--cyan)' }}>Waline 快速上手</a>
         </p>
       </div>
     );

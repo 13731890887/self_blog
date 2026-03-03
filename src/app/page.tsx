@@ -2,342 +2,158 @@ import { getAllPosts } from "@/lib/posts";
 import { getAllBooks } from "@/lib/books";
 import Link from "next/link";
 
-const exhibits = [
-  {
-    href: "/lab",
-    icon: "⚗️",
-    title: "技术展厅",
-    subtitle: "Lab",
-    desc: "AI、工程实践与技术探索",
-    color: "#00d4ff",
-  },
-  {
-    href: "/reading",
-    icon: "📚",
-    title: "书目陈列室",
-    subtitle: "Reading",
-    desc: "阅读笔记与思想碰撞",
-    color: "#bf5af2",
-  },
-  {
-    href: "/achievements",
-    icon: "🏆",
-    title: "荣誉殿堂",
-    subtitle: "Achievements",
-    desc: "GitHub 数据与项目成就",
-    color: "#00d4ff",
-  },
-  {
-    href: "/guestbook",
-    icon: "💬",
-    title: "留言墙",
-    subtitle: "Guestbook",
-    desc: "留下你来过的足迹",
-    color: "#bf5af2",
-  },
-  {
-    href: "/about",
-    icon: "👤",
-    title: "关于我",
-    subtitle: "About",
-    desc: "这个博物馆背后的人",
-    color: "#00d4ff",
-  },
-];
+const featuredSlugs = ["cloudflare-pages-deploy", "first-post"];
 
 export default function Home() {
-  const posts = getAllPosts().slice(0, 3);
-  const books = getAllBooks().slice(0, 2);
+  const allPosts = getAllPosts();
+  const allBooks = getAllBooks();
+  const featuredPosts = featuredSlugs
+    .map((slug) => allPosts.find((post) => post.slug === slug))
+    .filter((post): post is NonNullable<typeof post> => Boolean(post));
+  const fallbackPosts = allPosts.filter((post) => !featuredSlugs.includes(post.slug)).slice(0, 3);
+  const showcasePosts = (featuredPosts.length > 0 ? featuredPosts : fallbackPosts).slice(0, 3);
+  const recentBooks = allBooks.slice(0, 2);
 
   return (
-    <main style={{ background: "#080b0f", minHeight: "100vh", paddingTop: "56px" }}>
-      {/* Hero Section */}
-      <section
-        style={{
-          maxWidth: "1200px",
-          margin: "0 auto",
-          padding: "80px 24px 60px",
-        }}
-      >
-        <div
-          style={{
-            fontFamily: "var(--font-mono, JetBrains Mono, monospace)",
-            fontSize: "13px",
-            color: "#00d4ff",
-            marginBottom: "16px",
-            letterSpacing: "0.1em",
-          }}
-        >
-          {'>'} 欢迎来到
-        </div>
-        <h1
-          style={{
-            fontFamily: "var(--font-mono, JetBrains Mono, monospace)",
-            fontSize: "clamp(2.5rem, 8vw, 5rem)",
-            fontWeight: 700,
-            lineHeight: 1.1,
-            margin: "0 0 20px 0",
-            color: "#e2e8f0",
-          }}
-        >
-          SEQI
-          <span style={{ color: "#00d4ff" }}>.MUSEUM</span>
-        </h1>
+    <main style={{ minHeight: "100vh", paddingTop: "56px" }}>
+      <section style={{ maxWidth: "1040px", margin: "0 auto", padding: "72px 24px 48px" }}>
         <p
           style={{
-            fontSize: "clamp(16px, 2vw, 20px)",
-            color: "#7fa3bf",
-            margin: "0 0 16px 0",
-            maxWidth: "480px",
+            margin: 0,
+            fontSize: "12px",
+            letterSpacing: "0.08em",
+            fontFamily: "var(--font-mono, monospace)",
+            color: "var(--cyan)",
           }}
         >
-          个人博物馆 — 技术、阅读、成就的数字展厅
+          SEQI.MUSEUM / Personal Site
         </p>
-        <div
+        <h1
           style={{
-            height: "1px",
-            background: "linear-gradient(to right, rgba(0, 212, 255, 0.4), rgba(0, 212, 255, 0.05), transparent)",
-            marginTop: "40px",
+            margin: "14px 0 12px",
+            fontSize: "clamp(2.1rem, 7vw, 4rem)",
+            lineHeight: 1.08,
+            fontFamily: "var(--font-mono, JetBrains Mono, monospace)",
+            color: "var(--text-primary)",
           }}
-        />
+        >
+          记录技术实践，沉淀可复用的方法。
+        </h1>
+        <p style={{ maxWidth: "680px", margin: 0, fontSize: "18px", lineHeight: 1.75, color: "var(--text-secondary)" }}>
+          我是 Seqi，这里主要分享工程实践、部署经验和阅读笔记。内容会尽量写到可以直接照着做，而不是只谈概念。
+        </p>
+
+        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginTop: "26px" }}>
+          <Link
+            href="/blog"
+            style={{
+              padding: "10px 16px",
+              borderRadius: "6px",
+              border: "1px solid rgba(94, 194, 183, 0.35)",
+              background: "rgba(94, 194, 183, 0.1)",
+              color: "var(--text-primary)",
+              textDecoration: "none",
+              fontFamily: "var(--font-mono, monospace)",
+              fontSize: "13px",
+            }}
+          >
+            查看全部文章
+          </Link>
+          <Link
+            href="/about"
+            style={{
+              padding: "10px 16px",
+              borderRadius: "6px",
+              border: "1px solid rgba(200, 169, 107, 0.35)",
+              background: "rgba(200, 169, 107, 0.1)",
+              color: "var(--text-primary)",
+              textDecoration: "none",
+              fontFamily: "var(--font-mono, monospace)",
+              fontSize: "13px",
+            }}
+          >
+            了解我在做什么
+          </Link>
+        </div>
       </section>
 
-      {/* Exhibit Grid */}
-      <section style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 24px 80px" }}>
-        <div
-          style={{
-            fontFamily: "var(--font-mono, JetBrains Mono, monospace)",
-            fontSize: "12px",
-            color: "#7fa3bf",
-            marginBottom: "24px",
-            letterSpacing: "0.1em",
-          }}
-        >
-          EXHIBITS
+      <section style={{ maxWidth: "1040px", margin: "0 auto", padding: "0 24px 64px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px", gap: "12px", flexWrap: "wrap" }}>
+          <h2 style={{ margin: 0, fontSize: "24px", color: "var(--text-primary)" }}>代表文章</h2>
+          <p style={{ margin: 0, fontSize: "13px", color: "var(--text-secondary)" }}>新访客建议先从这里开始</p>
         </div>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-            gap: "16px",
-          }}
-        >
-          {exhibits.map((exhibit) => (
-            <Link
-              key={exhibit.href}
-              href={exhibit.href}
-              style={{ textDecoration: "none" }}
-            >
-              <div
-                className={exhibit.color === "#00d4ff" ? "card-hover-cyan" : "card-hover-purple"}
+        <div style={{ display: "grid", gap: "12px" }}>
+          {showcasePosts.map((post) => (
+            <Link key={post.slug} href={`/blog/${post.slug}`} style={{ textDecoration: "none" }}>
+              <article
+                className="list-row-hover"
                 style={{
-                  background: "#0d1117",
-                  border: "1px solid rgba(0, 212, 255, 0.15)",
-                  borderRadius: "4px",
-                  padding: "24px",
-                  cursor: "pointer",
+                  background: "var(--bg-secondary)",
+                  border: "1px solid rgba(94, 194, 183, 0.22)",
+                  borderRadius: "8px",
+                  padding: "18px 20px",
                 }}
               >
-                <div style={{ fontSize: "28px", marginBottom: "12px" }}>{exhibit.icon}</div>
-                <div
-                  style={{
-                    fontFamily: "var(--font-mono, JetBrains Mono, monospace)",
-                    fontSize: "16px",
-                    fontWeight: 600,
-                    color: "#e2e8f0",
-                    marginBottom: "4px",
-                  }}
-                >
-                  {exhibit.title}
+                <h3 style={{ margin: "0 0 8px", fontSize: "18px", color: "var(--text-primary)" }}>{post.title}</h3>
+                <p style={{ margin: "0 0 8px", fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.7 }}>
+                  {post.excerpt || "可直接复用的实践记录与步骤总结。"}
+                </p>
+                <div style={{ fontSize: "12px", color: "var(--cyan)", fontFamily: "var(--font-mono, monospace)" }}>
+                  {new Date(post.date).toLocaleDateString("zh-CN", { year: "numeric", month: "2-digit", day: "2-digit" })} / WHY READ: 有结论、有步骤
                 </div>
-                <div
-                  style={{
-                    fontSize: "11px",
-                    color: exhibit.color,
-                    fontFamily: "var(--font-mono, monospace)",
-                    marginBottom: "8px",
-                    letterSpacing: "0.05em",
-                  }}
-                >
-                  /{exhibit.subtitle}
-                </div>
-                <div style={{ fontSize: "13px", color: "#7fa3bf", lineHeight: 1.5 }}>
-                  {exhibit.desc}
-                </div>
-              </div>
+              </article>
             </Link>
           ))}
         </div>
       </section>
 
-      {/* Latest Posts */}
-      {posts.length > 0 && (
-        <section style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 24px 80px" }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginBottom: "24px",
-            }}
-          >
-            <div
-              style={{
-                fontFamily: "var(--font-mono, JetBrains Mono, monospace)",
-                fontSize: "12px",
-                color: "#7fa3bf",
-                letterSpacing: "0.1em",
-              }}
-            >
-              LATEST POSTS
+      <section style={{ maxWidth: "1040px", margin: "0 auto", padding: "0 24px 80px" }}>
+        <h2 style={{ margin: "0 0 16px", fontSize: "24px", color: "var(--text-primary)" }}>你可以从这里继续</h2>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "12px" }}>
+          <Link href="/reading" style={{ textDecoration: "none" }}>
+            <div className="card-hover-cyan" style={{ background: "var(--bg-secondary)", border: "1px solid rgba(94, 194, 183, 0.22)", borderRadius: "8px", padding: "18px" }}>
+              <div style={{ fontSize: "16px", color: "var(--text-primary)", marginBottom: "6px" }}>阅读笔记</div>
+              <p style={{ margin: 0, fontSize: "13px", color: "var(--text-secondary)", lineHeight: 1.6 }}>
+                看我最近在读什么，以及每本书最值得记住的一句话。
+              </p>
             </div>
-            <Link
-              href="/lab"
-              style={{
-                fontSize: "12px",
-                color: "#00d4ff",
-                fontFamily: "var(--font-mono, monospace)",
-                textDecoration: "none",
-              }}
-            >
-              查看全部 →
-            </Link>
-          </div>
-          <div style={{ display: "grid", gap: "12px" }}>
-            {posts.map((post) => (
-              <Link key={post.slug} href={`/lab/${post.slug}`} style={{ textDecoration: "none" }}>
-                <div
-                  className="list-row-hover"
-                  style={{
-                    background: "#0d1117",
-                    border: "1px solid rgba(0, 212, 255, 0.15)",
-                    borderRadius: "4px",
-                    padding: "20px 24px",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "flex-start",
-                    gap: "16px",
-                  }}
-                >
-                  <div>
-                    <div
-                      style={{
-                        fontSize: "16px",
-                        fontWeight: 500,
-                        color: "#e2e8f0",
-                        marginBottom: "4px",
-                      }}
-                    >
-                      {post.title}
-                    </div>
-                    {post.excerpt && (
-                      <div style={{ fontSize: "13px", color: "#7fa3bf" }}>{post.excerpt}</div>
-                    )}
-                  </div>
-                  <div
-                    style={{
-                      fontSize: "12px",
-                      color: "#7fa3bf",
-                      whiteSpace: "nowrap",
-                      fontFamily: "var(--font-mono, monospace)",
-                    }}
-                  >
-                    {new Date(post.date).toLocaleDateString("zh-CN", {
-                      month: "2-digit",
-                      day: "2-digit",
-                    })}
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
+          </Link>
+          <Link href="/guestbook" style={{ textDecoration: "none" }}>
+            <div className="card-hover-cyan" style={{ background: "var(--bg-secondary)", border: "1px solid rgba(94, 194, 183, 0.22)", borderRadius: "8px", padding: "18px" }}>
+              <div style={{ fontSize: "16px", color: "var(--text-primary)", marginBottom: "6px" }}>留言与反馈</div>
+              <p style={{ margin: 0, fontSize: "13px", color: "var(--text-secondary)", lineHeight: 1.6 }}>
+                如果某篇文章对你有帮助，或你想看某个主题，可以直接告诉我。
+              </p>
+            </div>
+          </Link>
+          <Link href="/about" style={{ textDecoration: "none" }}>
+            <div className="card-hover-purple" style={{ background: "var(--bg-secondary)", border: "1px solid rgba(200, 169, 107, 0.24)", borderRadius: "8px", padding: "18px" }}>
+              <div style={{ fontSize: "16px", color: "var(--text-primary)", marginBottom: "6px" }}>关于我</div>
+              <p style={{ margin: 0, fontSize: "13px", color: "var(--text-secondary)", lineHeight: 1.6 }}>
+                当前关注方向、合作偏好和可联系渠道。
+              </p>
+            </div>
+          </Link>
+        </div>
 
-      {/* Latest Books */}
-      {books.length > 0 && (
-        <section style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 24px 80px" }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginBottom: "24px",
-            }}
-          >
-            <div
-              style={{
-                fontFamily: "var(--font-mono, JetBrains Mono, monospace)",
-                fontSize: "12px",
-                color: "#7fa3bf",
-                letterSpacing: "0.1em",
-              }}
-            >
-              RECENT READING
+        {recentBooks.length > 0 && (
+          <div style={{ marginTop: "32px", padding: "18px 20px", borderRadius: "8px", border: "1px solid rgba(200, 169, 107, 0.24)", background: "rgba(200, 169, 107, 0.06)" }}>
+            <div style={{ marginBottom: "10px", fontSize: "13px", fontFamily: "var(--font-mono, monospace)", color: "var(--purple)" }}>
+              RECENT READING SNAPSHOT
             </div>
-            <Link
-              href="/reading"
-              style={{
-                fontSize: "12px",
-                color: "#bf5af2",
-                fontFamily: "var(--font-mono, monospace)",
-                textDecoration: "none",
-              }}
-            >
-              查看全部 →
-            </Link>
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "16px" }}>
-            {books.map((book) => (
-              <Link key={book.slug} href={`/reading/${book.slug}`} style={{ textDecoration: "none" }}>
-                <div
-                  className="book-row-hover"
-                  style={{
-                    background: "#0d1117",
-                    border: "1px solid rgba(191, 90, 242, 0.2)",
-                    borderRadius: "4px",
-                    padding: "20px",
-                  }}
-                >
-                  <div style={{ fontSize: "16px", fontWeight: 500, color: "#e2e8f0", marginBottom: "4px" }}>
+            <ul style={{ margin: 0, paddingLeft: "18px", color: "var(--text-secondary)", lineHeight: 1.8 }}>
+              {recentBooks.map((book) => (
+                <li key={book.slug}>
+                  <Link href={`/reading/${book.slug}`} style={{ color: "var(--text-primary)", textDecoration: "none" }}>
                     {book.title}
-                  </div>
-                  <div style={{ fontSize: "13px", color: "#7fa3bf", marginBottom: "8px" }}>
-                    {book.author}
-                  </div>
-                  <div style={{ display: "flex", gap: "2px", marginBottom: "8px" }}>
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <span key={star} style={{ color: star <= book.rating ? "#bf5af2" : "#7fa3bf", fontSize: "12px" }}>★</span>
-                    ))}
-                  </div>
-                  <p style={{ fontSize: "13px", color: "#7fa3bf", lineHeight: 1.5, margin: 0 }}>
-                    {book.excerpt}
-                  </p>
-                </div>
-              </Link>
-            ))}
+                  </Link>
+                  <span style={{ color: "var(--text-secondary)" }}> - {book.excerpt}</span>
+                </li>
+              ))}
+            </ul>
           </div>
-        </section>
-      )}
-
-      {/* Footer */}
-      <footer
-        style={{
-          borderTop: "1px solid rgba(0, 212, 255, 0.1)",
-          padding: "32px 24px",
-          textAlign: "center",
-        }}
-      >
-        <p
-          style={{
-            fontSize: "13px",
-            color: "#7fa3bf",
-            fontFamily: "var(--font-mono, monospace)",
-          }}
-        >
-          © 2025 SEQI.MUSEUM — Built with Next.js
-        </p>
-      </footer>
+        )}
+      </section>
     </main>
   );
 }
