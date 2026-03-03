@@ -9,12 +9,12 @@ This repository is a static-export Next.js 15 blog.
 - `src/types/`: Shared TypeScript types.
 - `content/posts/` and `content/books/`: Author content in `.md`/`.mdx`.
 - `public/`: Static assets.
-- Generated outputs: `out/` and `dist/` (do not edit manually).
+- Generated output: `out/` (do not edit manually).
 
 ## Build, Test, and Development Commands
 - `npm ci`: Install dependencies (preferred in CI/local clean setup).
 - `npm run dev`: Start local development server.
-- `npm run build`: Build static output and copy `out/*` into `dist/`.
+- `npm run build`: Build static export to `out/`.
 - `npm run preview`: Build and serve exported site for local verification.
 - `npm run lint`: Run Next.js ESLint checks.
 - `npm run type-check`: Run TypeScript checks without emit.

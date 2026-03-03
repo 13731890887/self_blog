@@ -1,135 +1,52 @@
-# 腾讯云部署指南
+# Cloudflare Pages 部署指南
 
 ## 概述
 
-本项目是一个 Next.js 静态博客，配置了静态导出和 GitHub Actions 自动部署到腾讯云。
+本项目是 Next.js 静态导出博客，部署目标为 Cloudflare Pages。
 
-## 技术栈
-
-- Next.js 15 + React 19 + TypeScript
-- Tailwind CSS 样式
-- MDX 博客文章支持
-- Giscus 评论系统
-- 代码高亮
-
-## 本地开发
+## 本地命令
 
 ```bash
-# 安装依赖
-npm install
-
-# 启动开发服务器
+npm ci
 npm run dev
-
-# 构建静态文件
+npm run lint
+npm run type-check
 npm run build
-
-# 预览构建结果
-npm run preview
 ```
 
-## 腾讯云部署
+`npm run build` 会生成静态文件到 `out/` 目录。
 
-### 1. 配置 COS 存储桶
+## Cloudflare Pages 配置
 
-1. 登录 [腾讯云控制台](https://console.cloud.tencent.com/cos)
-2. 创建存储桶，选择：
-   - **地域**：选择就近地域
-   - **访问权限**：公有读私有写
-3. 开启**静态网站**托管
+在 Pages 项目中使用以下构建设置：
 
-### 2. 配置 CDN 加速
-
-1. 创建 CDN 加速域名
-2. 源站类型选择 **COS 源**
-3. 配置缓存规则：
-   - 文件名带参数：不缓存
-   - 静态文件：缓存 30 天
-   - HTML 文件：不缓存
-
-### 3. 配置 GitHub Secrets
-
-在 GitHub 仓库设置中添加以下 Secrets：
-
-| Secret 名称 | 说明 | 获取方式 |
-|------------|------|----------|
-| `TENCENT_SECRET_ID` | 腾讯云 API 密钥 ID | [访问管理](https://console.cloud.tencent.com/cam/capi) |
-| `TENCENT_SECRET_KEY` | 腾讯云 API 密钥 Key | 同上 |
-| `TENCENT_COS_BUCKET` | COS 存储桶名称 | 格式：`bucket-name-appid` |
-| `TENCENT_COS_REGION` | COS 所在地域 | 如：`ap-guangzhou` |
-| `TENCENT_CDN_REGION` | CDN 加速地域 | 如：`ap-guangzhou` |
-| `CDN_DOMAIN` | CDN 加速域名 | 如：`blog.example.com` |
-
-### 4. 配置 Giscus 评论
-
-1. 访问 [Giscus](https://giscus.app)
-2. 配置你的 GitHub 仓库
-3. 复制配置信息到 `src/components/Giscus.tsx`：
-
-```typescript
-<GiscusComponent
-  repo="你的用户名/仓库名"
-  repoId="你的仓库ID"
-  category="Announcements"
-  categoryId="你的分类ID"
-  // ...
-/>
+```txt
+Framework preset: Next.js (Static HTML Export)
+Build command: npm run build
+Build output directory: out
+Node.js version: 20
 ```
 
-## 写博客
+## 环境变量
 
-在 `content/posts/` 目录下创建 `.mdx` 或 `.md` 文件：
+如果使用留言后端服务（Waline/自建 API），在 Pages 中配置：
 
-```mdx
----
-title: "文章标题"
-date: "2025-02-28"
-excerpt: "文章摘要"
-tags: ["标签1", "标签2"]
-author: "作者名"
----
-
-# 文章内容
-
-这里是文章正文...
+```txt
+NEXT_PUBLIC_WALINE_URL=https://your-comment-service.example.com
 ```
 
-## 目录结构
+说明：
+- 该变量用于前端调用你的后端留言服务。
+- 修改环境变量后需重新触发部署。
 
-```
-self_web/
-├── .github/workflows/
-│   └── deploy.yml        # GitHub Actions 部署配置
-├── content/posts/        # MDX 博客文章
-├── src/
-│   ├── app/              # Next.js App Router 页面
-│   ├── components/       # React 组件
-│   ├── lib/              # 工具函数
-│   └── types/            # TypeScript 类型
-├── package.json
-├── next.config.ts        # Next.js 配置
-└── tailwind.config.ts    # Tailwind 配置
-```
+## 发布流程
 
-## 推送到主分支后
+1. 提交代码并推送到 GitHub `main`
+2. Cloudflare Pages 自动拉取并构建
+3. 发布完成后在 `*.pages.dev` 或绑定域名访问
 
-GitHub Actions 会自动：
-1. 构建静态文件到 `out/` 目录
-2. 上传到腾讯云 COS
-3. 刷新 CDN 缓存
+## 常见排查
 
-几分钟后，你的博客就会更新！
-
-## 常见问题
-
-### 构建失败
-
-检查 `package.json` 中的依赖是否正确安装。
-
-### 评论不显示
-
-确保 Giscus 配置正确，且仓库已开启 Discussions。
-
-### 代码高亮不生效
-
-检查 `globals.css` 中的 `.hljs` 样式是否加载。
+- 构建失败：先本地执行 `npm run lint && npm run type-check && npm run build`
+- 页面 404：确认输出目录是 `out`
+- 留言不可用：确认 `NEXT_PUBLIC_WALINE_URL` 指向可公网访问的后端服务
