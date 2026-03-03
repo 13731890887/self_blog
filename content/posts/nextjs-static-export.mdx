@@ -1,0 +1,64 @@
+---
+title: "Next.js 静态导出部署到腾讯云"
+date: "2025-02-28"
+excerpt: "详细介绍如何将 Next.js 应用配置为静态导出，并部署到腾讯云 COS + CDN。"
+tags: ["Next.js", "部署", "腾讯云", "教程"]
+author: "Seqi"
+---
+
+## Next.js 静态导出指南
+
+Next.js 支持将应用导出为静态 HTML 文件，这对于个人博客、文档网站等场景非常适用。
+
+### 配置静态导出
+
+在 `next.config.ts` 中添加以下配置：
+
+```typescript
+const nextConfig: NextConfig = {
+  output: "export",
+  images: {
+    unoptimized: true,
+  },
+};
+```
+
+### 部署到腾讯云
+
+#### 1. 配置 COS 存储桶
+
+1. 登录腾讯云控制台
+2. 创建 COS 存储桶，选择**公有读**权限
+3. 开启静态网站托管
+
+#### 2. 配置 CDN 加速
+
+1. 创建 CDN 加速域名
+2. 源站类型选择 COS 源
+3. 配置缓存规则
+
+#### 3. 自动部署
+
+使用 GitHub Actions 实现自动部署：
+
+```yaml
+- name: Deploy to Tencent COS
+  run: |
+    pip3 install coscmd
+    coscmd upload -r out/ /
+```
+
+### 优势
+
+- 🚀 **加载速度快** - 静态文件直接通过 CDN 分发
+- 💰 **成本低** - 无需服务器，只需存储和 CDN 费用
+- 🔒 **稳定性高** - 静态站点不易受攻击
+- 📦 **易部署** - 构建一次，随处部署
+
+### 注意事项
+
+1. 静态导出不支持 API Routes
+2. 图片优化需要禁用或使用外部服务
+3. 动态路由需要 `generateStaticParams` 预生成
+
+希望这篇指南对你有所帮助！
