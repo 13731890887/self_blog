@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../../components/layout/BaseLayout.astro';
+import Button from '../../components/ui/Button.astro';
+---
+
+<BaseLayout title="Admin | Self Blog">
+  <section class="shell py-16">
+    <div class="panel max-w-3xl rounded-[2rem] p-8">
+      <p class="text-xs uppercase tracking-[0.24em] text-accent-warm">Protected Route</p>
+      <h1 class="mt-4 font-display text-5xl tracking-[-0.05em] text-text">Admin writing cockpit</h1>
+      <p class="mt-4 max-w-2xl leading-8 text-muted">
+        This page is the scaffold for title refinement, tag generation, readability checks, and meta description drafting.
+        Authentication and server-side validation will be added in the implementation phase.
+      </p>
+      <div class="mt-8 grid gap-4 md:grid-cols-2">
+        <div class="rounded-3xl border border-border bg-bg/60 p-5">
+          <p class="text-sm text-text">Feature slots</p>
+          <ul class="mt-3 space-y-2 text-sm text-muted">
+            <li>Optimize title candidates</li>
+            <li>Generate tag suggestions</li>
+            <li>Run readability diagnostics</li>
+            <li>Draft SEO description</li>
+          </ul>
+        </div>
+        <div class="rounded-3xl border border-border bg-bg/60 p-5">
+          <p class="text-sm text-text">Planned controls</p>
+          <ul class="mt-3 space-y-2 text-sm text-muted">
+            <li>Password gate + session cookie</li>
+            <li>Prompt presets by content type</li>
+            <li>Streaming preview pane</li>
+            <li>Publish checklist</li>
+          </ul>
+        </div>
+      </div>
+      <div class="mt-8">
+        <Button href="/">Return Home</Button>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

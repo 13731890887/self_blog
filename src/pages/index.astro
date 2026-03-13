@@ -1,0 +1,53 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../components/layout/BaseLayout.astro';
+import Button from '../components/ui/Button.astro';
+import ArticleCard from '../components/blog/ArticleCard.astro';
+import SearchModal from '../components/islands/SearchModal.tsx';
+
+const articles = (await getCollection('articles', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+  .slice(0, 3);
+---
+
+<BaseLayout title="Self Blog | Digital Garden Noir">
+  <section class="shell py-14 md:py-24">
+    <div class="panel rounded-[2rem] p-8 md:p-12">
+      <p class="text-xs uppercase tracking-[0.28em] text-secondary">Digital Garden Noir</p>
+      <h1 class="mt-5 max-w-4xl font-display text-5xl leading-none tracking-[-0.05em] text-text md:text-7xl">
+        A low-bandwidth personal blog engineered around stillness, speed, and AI-assisted reading.
+      </h1>
+      <p class="mt-6 max-w-2xl text-base leading-8 text-muted">
+        Astro ships mostly static HTML, Preact hydrates only where interaction matters, and Hono plus SQLite
+        keep the dynamic path narrow.
+      </p>
+      <div class="mt-8 flex flex-wrap items-center gap-3">
+        <Button href="/articles">Read Articles</Button>
+        <Button href="/admin" variant="ghost">Open Admin</Button>
+        <SearchModal client:idle />
+      </div>
+    </div>
+  </section>
+
+  <section class="shell pb-20">
+    <div class="mb-8 flex items-end justify-between gap-4">
+      <div>
+        <p class="text-xs uppercase tracking-[0.24em] text-muted">Latest Notes</p>
+        <h2 class="mt-3 font-display text-4xl tracking-[-0.04em] text-text">Recent writing</h2>
+      </div>
+      <a href="/articles" class="text-sm text-muted transition hover:text-primary">View all</a>
+    </div>
+    <div class="grid gap-6 md:grid-cols-3">
+      {articles.map((article) => (
+        <ArticleCard
+          href={`/articles/${article.slug}`}
+          title={article.data.title}
+          description={article.data.description}
+          pubDate={article.data.pubDate}
+          tags={article.data.tags}
+          readingTime={article.data.readingTime}
+        />
+      ))}
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,20 @@
+---
+import MoodOrb from '../islands/MoodOrb.tsx';
+---
+
+<header class="sticky top-0 z-30 border-b border-border/80 bg-bg/85 backdrop-blur">
+  <div class="shell flex items-center justify-between gap-6 py-4">
+    <a href="/" class="font-display text-lg uppercase tracking-[0.18em] text-text">Self Blog</a>
+    <nav class="hidden items-center gap-5 text-sm text-muted md:flex">
+      <a href="/articles" class="transition hover:text-text">Articles</a>
+      <a href="/tags/architecture" class="transition hover:text-text">Tags</a>
+      <a href="/admin" class="transition hover:text-text">Admin</a>
+    </nav>
+    <div class="flex items-center gap-3">
+      <MoodOrb client:idle />
+      <a href="/articles" class="rounded-full border border-border px-4 py-2 text-sm text-muted transition hover:border-primary hover:text-text">
+        Enter Garden
+      </a>
+    </div>
+  </div>
+</header>

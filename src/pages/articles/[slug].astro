@@ -1,0 +1,54 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../components/layout/BaseLayout.astro';
+import TableOfContents from '../../components/blog/TableOfContents.astro';
+import Tag from '../../components/ui/Tag.astro';
+import AiCompanion from '../../components/islands/AiCompanion.tsx';
+import ViewCounter from '../../components/islands/ViewCounter.tsx';
+
+export async function getStaticPaths() {
+  const articles = await getCollection('articles', ({ data }) => !data.draft);
+  return articles.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry }
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content, headings } = await render(entry);
+---
+
+<BaseLayout title={`${entry.data.title} | Self Blog`} description={entry.data.description}>
+  <section class="shell py-14">
+    <div class="mx-auto max-w-4xl">
+      <div class="flex flex-wrap gap-2">
+        {entry.data.tags.map((tag: string) => <Tag label={tag} />)}
+      </div>
+      <h1 class="mt-6 font-display text-5xl tracking-[-0.05em] text-text md:text-6xl">{entry.data.title}</h1>
+      <p class="mt-5 max-w-3xl text-lg leading-8 text-muted">{entry.data.description}</p>
+      <div class="mt-6 flex flex-wrap items-center gap-4 text-sm text-muted">
+        <span>{entry.data.pubDate.toLocaleDateString('zh-CN')}</span>
+        <span>{entry.data.readingTime}</span>
+        <span><ViewCounter client:load slug={entry.slug} /></span>
+      </div>
+      {entry.data.tldr && (
+        <div class="mt-8 rounded-3xl border border-secondary/30 bg-secondary/8 p-5">
+          <p class="text-xs uppercase tracking-[0.22em] text-secondary">AI TL;DR</p>
+          <p class="mt-3 leading-7 text-text">{entry.data.tldr}</p>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <section class="shell pb-20">
+    <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_18rem]">
+      <article class="prose-garden min-w-0 rounded-[2rem] border border-border bg-surface px-6 py-8 md:px-10">
+        <Content />
+      </article>
+      <div class="space-y-6">
+        <TableOfContents headings={headings} />
+        <AiCompanion client:idle />
+      </div>
+    </div>
+  </section>
+</BaseLayout>

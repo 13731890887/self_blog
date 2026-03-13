@@ -1,0 +1,26 @@
+---
+import Tag from '../ui/Tag.astro';
+
+interface Props {
+  href: string;
+  title: string;
+  description: string;
+  pubDate: Date;
+  tags: string[];
+  readingTime?: string;
+}
+
+const { href, title, description, pubDate, tags, readingTime = '5 min read' } = Astro.props;
+---
+
+<a href={href} class="panel group block rounded-3xl p-6 transition hover:-translate-y-1 hover:border-primary/70">
+  <div class="mb-5 flex flex-wrap gap-2">
+    {tags.slice(0, 3).map((tag) => <Tag label={tag} />)}
+  </div>
+  <h3 class="font-display text-2xl tracking-tight text-text">{title}</h3>
+  <p class="mt-3 text-sm leading-7 text-muted">{description}</p>
+  <div class="mt-6 flex items-center justify-between text-xs uppercase tracking-[0.22em] text-muted">
+    <span>{pubDate.toLocaleDateString('zh-CN')}</span>
+    <span>{readingTime}</span>
+  </div>
+</a>

@@ -1,0 +1,39 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../components/layout/BaseLayout.astro';
+import ArticleCard from '../../components/blog/ArticleCard.astro';
+
+export async function getStaticPaths() {
+  const articles = await getCollection('articles', ({ data }) => !data.draft);
+  const tags = new Set(articles.flatMap((article) => article.data.tags));
+
+  return [...tags].map((tag) => ({
+    params: { tag },
+    props: {
+      tag,
+      articles: articles.filter((article) => article.data.tags.includes(tag))
+    }
+  }));
+}
+
+const { tag, articles } = Astro.props;
+---
+
+<BaseLayout title={`#${tag} | Self Blog`}>
+  <section class="shell py-16">
+    <p class="text-xs uppercase tracking-[0.24em] text-secondary">Tag archive</p>
+    <h1 class="mt-4 font-display text-5xl tracking-[-0.05em] text-text">#{tag}</h1>
+    <div class="mt-10 grid gap-6 md:grid-cols-2">
+      {articles.map((article: any) => (
+        <ArticleCard
+          href={`/articles/${article.slug}`}
+          title={article.data.title}
+          description={article.data.description}
+          pubDate={article.data.pubDate}
+          tags={article.data.tags}
+          readingTime={article.data.readingTime}
+        />
+      ))}
+    </div>
+  </section>
+</BaseLayout>

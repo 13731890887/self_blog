@@ -1,0 +1,104 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #0a0a0f;
+  --surface: #111118;
+  --surface-strong: #161621;
+  --border: #1e1e2e;
+  --text: #e8e8f0;
+  --muted: #8888aa;
+  --primary: #6c63ff;
+  --secondary: #00d9c0;
+  --accent-warm: #ff6b6b;
+  --shadow: 0 24px 80px rgba(5, 5, 10, 0.45);
+  --content-width: 72rem;
+  --font-display: "Syne Variable", "Syne", sans-serif;
+  --font-body: "Inter Variable", "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-strong: var(--surface-strong);
+  --color-border: var(--border);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-accent-warm: var(--accent-warm);
+  --font-display: var(--font-display);
+  --font-sans: var(--font-body);
+  --font-mono: var(--font-mono);
+}
+
+html {
+  background:
+    radial-gradient(circle at top, rgba(108, 99, 255, 0.16), transparent 26rem),
+    radial-gradient(circle at 85% 15%, rgba(0, 217, 192, 0.12), transparent 18rem),
+    var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+}
+
+::selection {
+  background: rgba(108, 99, 255, 0.35);
+}
+
+.shell {
+  margin: 0 auto;
+  max-width: var(--content-width);
+  padding: 1.5rem;
+}
+
+.panel {
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
+  box-shadow: var(--shadow);
+}
+
+.grid-fade {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-position: center;
+  background-size: 36px 36px;
+}
+
+.prose-garden {
+  color: var(--text);
+}
+
+.prose-garden :is(h1, h2, h3, h4) {
+  font-family: var(--font-display);
+  letter-spacing: -0.03em;
+}
+
+.prose-garden :is(p, li) {
+  color: rgba(232, 232, 240, 0.88);
+}
+
+.prose-garden code {
+  border-radius: 0.45rem;
+  background: rgba(17, 17, 24, 0.95);
+  padding: 0.15rem 0.35rem;
+  font-family: var(--font-mono);
+}
+
+.prose-garden pre {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: #0c0c14;
+  padding: 1rem;
+}

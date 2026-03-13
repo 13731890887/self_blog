@@ -1,0 +1,29 @@
+---
+import Header from './Header.astro';
+import Footer from './Footer.astro';
+import '../../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'A digital garden optimized for low-bandwidth reading and AI-assisted exploration.' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+  </head>
+  <body class="grid-fade">
+    <Header />
+    <main>
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

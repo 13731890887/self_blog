@@ -1,0 +1,30 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../components/layout/BaseLayout.astro';
+import ArticleCard from '../../components/blog/ArticleCard.astro';
+
+const articles = (await getCollection('articles', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+---
+
+<BaseLayout title="Articles | Self Blog">
+  <section class="shell py-16">
+    <p class="text-xs uppercase tracking-[0.24em] text-secondary">Archive</p>
+    <h1 class="mt-4 font-display text-5xl tracking-[-0.05em] text-text">Articles</h1>
+    <p class="mt-4 max-w-2xl leading-8 text-muted">
+      Writing about performance budgets, AI-native interfaces, and systems shaped around constraints.
+    </p>
+    <div class="mt-10 grid gap-6 md:grid-cols-2">
+      {articles.map((article) => (
+        <ArticleCard
+          href={`/articles/${article.slug}`}
+          title={article.data.title}
+          description={article.data.description}
+          pubDate={article.data.pubDate}
+          tags={article.data.tags}
+          readingTime={article.data.readingTime}
+        />
+      ))}
+    </div>
+  </section>
+</BaseLayout>
