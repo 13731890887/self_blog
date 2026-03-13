@@ -1,12 +1,12 @@
 ---
 import { getCollection } from 'astro:content';
-import BaseLayout from '../components/layout/BaseLayout.astro';
-import Button from '../components/ui/Button.astro';
-import ArticleCard from '../components/blog/ArticleCard.astro';
-import SearchModal from '../components/islands/SearchModal.tsx';
-import { getLocaleCopy, localizedPath } from '../lib/i18n';
+import BaseLayout from '../../components/layout/BaseLayout.astro';
+import Button from '../../components/ui/Button.astro';
+import ArticleCard from '../../components/blog/ArticleCard.astro';
+import SearchModal from '../../components/islands/SearchModal.tsx';
+import { getLocaleCopy, localizedPath } from '../../lib/i18n';
 
-const locale = 'zh' as const;
+const locale = 'en' as const;
 const copy = getLocaleCopy(locale);
 const articles = (await getCollection('articles', ({ data }) => !data.draft))
   .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())

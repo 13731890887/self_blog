@@ -2,17 +2,23 @@
 import Header from './Header.astro';
 import Footer from './Footer.astro';
 import '../../styles/global.css';
+import { localeMeta, type Locale } from '../../lib/i18n';
 
 interface Props {
   title: string;
   description?: string;
+  locale: Locale;
 }
 
-const { title, description = 'A digital garden optimized for low-bandwidth reading and AI-assisted exploration.' } = Astro.props;
+const {
+  title,
+  description = 'A digital garden optimized for low-bandwidth reading and AI-assisted exploration.',
+  locale
+} = Astro.props;
 ---
 
 <!doctype html>
-<html lang="zh-CN">
+<html lang={localeMeta[locale].lang}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -20,10 +26,10 @@ const { title, description = 'A digital garden optimized for low-bandwidth readi
     <title>{title}</title>
   </head>
   <body class="grid-fade">
-    <Header />
+    <Header locale={locale} currentPath={Astro.url.pathname} />
     <main>
       <slot />
     </main>
-    <Footer />
+    <Footer locale={locale} />
   </body>
 </html>

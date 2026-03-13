@@ -16,6 +16,7 @@
     "build": "npm run build:web && npm run build:api",
     "build:web": "astro build",
     "build:api": "npm --workspace api run build",
+    "test": "npm --workspace api run test",
     "preview": "astro preview",
     "check": "astro check",
     "astro": "astro"

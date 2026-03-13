@@ -12,9 +12,7 @@ CREATE TABLE IF NOT EXISTS articles (
 
 CREATE VIRTUAL TABLE IF NOT EXISTS articles_fts USING fts5(
   title,
-  body,
-  content='articles',
-  content_rowid='id'
+  body
 );
 
 CREATE TABLE IF NOT EXISTS article_views (

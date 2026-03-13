@@ -13,6 +13,12 @@ export default defineConfig({
     }
   },
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss()],
+    server: {
+      proxy: {
+        '/api': 'http://127.0.0.1:4322',
+        '/health': 'http://127.0.0.1:4322'
+      }
+    }
   }
 });

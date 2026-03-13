@@ -1,4 +1,6 @@
 ---
+import { getLocaleCopy, type Locale } from '../../lib/i18n';
+
 interface Heading {
   depth: number;
   slug: string;
@@ -7,13 +9,15 @@ interface Heading {
 
 interface Props {
   headings: Heading[];
+  locale: Locale;
 }
 
-const { headings } = Astro.props;
+const { headings, locale } = Astro.props;
+const copy = getLocaleCopy(locale);
 ---
 
 <aside class="panel rounded-3xl p-5">
-  <p class="mb-4 text-xs uppercase tracking-[0.24em] text-muted">On this page</p>
+  <p class="mb-4 text-xs uppercase tracking-[0.24em] text-muted">{copy.toc}</p>
   <ul class="space-y-3 text-sm text-muted">
     {headings.map((heading) => (
       <li class:list={{ 'pl-4': heading.depth > 2 }}>

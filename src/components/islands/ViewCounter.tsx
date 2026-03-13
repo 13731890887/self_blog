@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'preact/hooks';
+import type { Locale } from '../../lib/i18n';
 
-export default function ViewCounter({ slug }: { slug: string }) {
+export default function ViewCounter({ slug, locale }: { slug: string; locale: Locale }) {
   const [views, setViews] = useState<number | null>(null);
 
   useEffect(() => {
@@ -20,5 +21,5 @@ export default function ViewCounter({ slug }: { slug: string }) {
     };
   }, [slug]);
 
-  return <span>{views === null ? '...' : `${views} reads`}</span>;
+  return <span>{views === null ? '...' : locale === 'zh' ? `${views} 阅读` : `${views} reads`}</span>;
 }

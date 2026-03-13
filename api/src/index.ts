@@ -1,17 +1,23 @@
 import { serve } from '@hono/node-server';
 import { Hono } from 'hono';
 import ai from './routes/ai.js';
+import admin from './routes/admin.js';
 import search from './routes/search.js';
 import views from './routes/views.js';
+import { initializeDatabase } from './db/init.js';
+import { loadEnvironment } from './lib/env.js';
 
+loadEnvironment();
 const app = new Hono();
+initializeDatabase();
 
 app.get('/health', (c) => c.json({ ok: true }));
+app.route('/api/admin', admin);
 app.route('/api/ai', ai);
 app.route('/api/search', search);
 app.route('/api/views', views);
 
-const port = Number(process.env.PORT ?? 4321);
+const port = Number(process.env.PORT ?? 4322);
 
 serve({
   fetch: app.fetch,

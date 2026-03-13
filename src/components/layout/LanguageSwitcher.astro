@@ -1,0 +1,27 @@
+---
+import type { Locale } from '../../lib/i18n';
+
+interface Props {
+  locale: Locale;
+  currentPath: string;
+}
+
+const { locale, currentPath } = Astro.props;
+const targetLocale: Locale = locale === 'zh' ? 'en' : 'zh';
+
+function toLocalePath(path: string, nextLocale: Locale) {
+  const withoutEn = path.startsWith('/en') ? path.slice(3) || '/' : path;
+  return nextLocale === 'en'
+    ? `/en${withoutEn === '/' ? '' : withoutEn}`
+    : withoutEn || '/';
+}
+
+const href = toLocalePath(currentPath, targetLocale);
+---
+
+<a
+  href={href}
+  class="rounded-full border border-border px-3 py-2 text-xs uppercase tracking-[0.2em] text-muted transition hover:border-primary hover:text-text"
+>
+  {locale === 'zh' ? 'EN' : '中文'}
+</a>
