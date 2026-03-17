@@ -1,6 +1,6 @@
 ---
-import MoodOrb from '../islands/MoodOrb.tsx';
 import LanguageSwitcher from './LanguageSwitcher.astro';
+import ThemeSwitcher from '../islands/ThemeSwitcher.tsx';
 import { getLocaleCopy, localizedPath, type Locale } from '../../lib/i18n';
 
 interface Props {
@@ -10,22 +10,29 @@ interface Props {
 
 const { locale, currentPath } = Astro.props;
 const copy = getLocaleCopy(locale);
+
+function isActive(path: string) {
+  return currentPath === path || currentPath === `${path}/`;
+}
 ---
 
 <header class="sticky top-0 z-30 border-b border-border/80 bg-bg/85 backdrop-blur">
-  <div class="shell flex items-center justify-between gap-6 py-4">
-    <a href={localizedPath(locale, '/')} class="font-display text-lg uppercase tracking-[0.18em] text-text">{copy.brand}</a>
-    <nav class="hidden items-center gap-5 text-sm text-muted md:flex">
-      <a href={localizedPath(locale, '/articles')} class="transition hover:text-text">{copy.navArticles}</a>
-      <a href={localizedPath(locale, '/tags/architecture')} class="transition hover:text-text">{copy.navTags}</a>
-      <a href={localizedPath(locale, '/admin')} class="transition hover:text-text">{copy.navAdmin}</a>
-    </nav>
-    <div class="flex items-center gap-3">
+  <div class="shell grid grid-cols-[1fr_auto_1fr] items-center gap-6 py-4">
+    <a href={localizedPath(locale, '/')} class="group inline-flex items-center justify-self-start gap-3 -ml-4 lg:-ml-8">
+      <span class="font-display text-2xl uppercase tracking-[0.22em] text-text transition group-hover:text-primary">{copy.brand}</span>
+      <span class="hidden h-px w-12 bg-gradient-to-r from-primary/70 to-transparent lg:block"></span>
+    </a>
+    <div class="flex justify-center">
+      <nav class="hidden items-center gap-1 rounded-full border border-border/90 bg-surface/75 p-1.5 shadow-[0_16px_50px_rgba(0,0,0,0.18)] md:flex">
+        <a href={localizedPath(locale, '/')} class:list={['rounded-full px-4 py-2 text-sm transition', isActive(localizedPath(locale, '/')) ? 'bg-white/6 text-text' : 'text-muted hover:bg-white/4 hover:text-text']}>{copy.navHome}</a>
+        <a href={localizedPath(locale, '/articles')} class:list={['rounded-full px-4 py-2 text-sm transition', isActive(localizedPath(locale, '/articles')) ? 'bg-white/6 text-text' : 'text-muted hover:bg-white/4 hover:text-text']}>{copy.navArticles}</a>
+        <a href={localizedPath(locale, '/questions')} class:list={['rounded-full px-4 py-2 text-sm transition', isActive(localizedPath(locale, '/questions')) ? 'bg-white/6 text-text' : 'text-muted hover:bg-white/4 hover:text-text']}>{copy.navQuestions}</a>
+        <a href={localizedPath(locale, '/admin')} class:list={['rounded-full px-4 py-2 text-sm transition', isActive(localizedPath(locale, '/admin')) ? 'bg-white/6 text-text' : 'text-muted hover:bg-white/4 hover:text-text']}>{copy.navAdmin}</a>
+      </nav>
+    </div>
+    <div class="flex items-center justify-end gap-2.5">
+      <ThemeSwitcher client:load locale={locale} />
       <LanguageSwitcher locale={locale} currentPath={currentPath} />
-      <MoodOrb client:idle />
-      <a href={localizedPath(locale, '/articles')} class="rounded-full border border-border px-4 py-2 text-sm text-muted transition hover:border-primary hover:text-text">
-        {copy.enterGarden}
-      </a>
     </div>
   </div>
 </header>

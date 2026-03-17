@@ -1,0 +1,30 @@
+{
+  "hero": {
+    "zh": {
+      "title": "先把问题问对",
+      "description": "慢一点，把复杂的事想明白。"
+    },
+    "en": {
+      "title": "Start by asking the right question",
+      "description": "Slow down and make the complicated parts legible."
+    }
+  },
+  "tags": [
+    {
+      "zh": "量化",
+      "en": "quant"
+    },
+    {
+      "zh": "思考",
+      "en": "think"
+    },
+    {
+      "zh": "问题",
+      "en": "question"
+    },
+    {
+      "zh": "你好",
+      "en": "hello"
+    }
+  ]
+}

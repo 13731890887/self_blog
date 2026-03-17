@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #0a0a0f;
+  --bg: #101018;
   --surface: #111118;
   --surface-strong: #161621;
   --border: #1e1e2e;
@@ -15,6 +15,16 @@
   --font-display: "Syne Variable", "Syne", sans-serif;
   --font-body: "Inter Variable", "Inter", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
+}
+
+:root[data-theme="soft"] {
+  --bg: #171a24;
+  --surface: #1a1f2b;
+  --surface-strong: #202637;
+  --border: #31384d;
+  --text: #eff2fb;
+  --muted: #a2abc7;
+  --shadow: 0 24px 90px rgba(8, 10, 20, 0.28);
 }
 
 @theme inline {
@@ -34,12 +44,23 @@
 
 html {
   background:
-    radial-gradient(circle at top, rgba(108, 99, 255, 0.16), transparent 26rem),
-    radial-gradient(circle at 85% 15%, rgba(0, 217, 192, 0.12), transparent 18rem),
+    radial-gradient(circle at top, rgba(108, 99, 255, 0.2), transparent 28rem),
+    radial-gradient(circle at 85% 15%, rgba(0, 217, 192, 0.14), transparent 20rem),
+    radial-gradient(circle at 18% 22%, rgba(255, 255, 255, 0.05), transparent 22rem),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 18rem),
     var(--bg);
   color: var(--text);
   font-family: var(--font-body);
   scroll-behavior: smooth;
+}
+
+html[data-theme="soft"] {
+  background:
+    radial-gradient(circle at top, rgba(108, 99, 255, 0.28), transparent 30rem),
+    radial-gradient(circle at 82% 18%, rgba(0, 217, 192, 0.18), transparent 22rem),
+    radial-gradient(circle at 16% 18%, rgba(255, 255, 255, 0.1), transparent 24rem),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 20rem),
+    var(--bg);
 }
 
 body {
@@ -77,15 +98,77 @@ a {
 
 .prose-garden {
   color: var(--text);
+  font-size: 1.05rem;
+  line-height: 1.9;
 }
 
 .prose-garden :is(h1, h2, h3, h4) {
   font-family: var(--font-display);
   letter-spacing: -0.03em;
+  color: var(--text);
+}
+
+.prose-garden h1 {
+  margin: 2.75rem 0 1rem;
+  font-size: clamp(2.4rem, 5vw, 4.5rem);
+  line-height: 0.95;
+}
+
+.prose-garden h2 {
+  margin: 2.25rem 0 0.9rem;
+  font-size: clamp(1.8rem, 3.4vw, 3rem);
+  line-height: 1.05;
+}
+
+.prose-garden h3 {
+  margin: 1.8rem 0 0.75rem;
+  font-size: clamp(1.35rem, 2.5vw, 2rem);
+  line-height: 1.15;
+}
+
+.prose-garden h4 {
+  margin: 1.5rem 0 0.65rem;
+  font-size: 1.15rem;
+  line-height: 1.25;
 }
 
 .prose-garden :is(p, li) {
   color: rgba(232, 232, 240, 0.88);
+}
+
+.prose-garden p {
+  margin: 1rem 0;
+}
+
+.prose-garden :is(ul, ol) {
+  margin: 1.1rem 0;
+  padding-left: 1.4rem;
+}
+
+.prose-garden ul {
+  list-style: disc;
+}
+
+.prose-garden ol {
+  list-style: decimal;
+}
+
+.prose-garden li {
+  margin: 0.5rem 0;
+}
+
+.prose-garden blockquote {
+  margin: 1.5rem 0;
+  border-left: 3px solid rgba(108, 99, 255, 0.65);
+  padding: 0.2rem 0 0.2rem 1rem;
+  color: rgba(232, 232, 240, 0.72);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.prose-garden hr {
+  margin: 2rem 0;
+  border: 0;
+  border-top: 1px solid var(--border);
 }
 
 .prose-garden code {
@@ -97,8 +180,27 @@ a {
 
 .prose-garden pre {
   overflow-x: auto;
+  margin: 1.4rem 0;
   border: 1px solid var(--border);
   border-radius: 1rem;
   background: #0c0c14;
   padding: 1rem;
+}
+
+.prose-garden img {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 1.5rem;
+  background: rgba(255, 255, 255, 0.09);
+  margin: 1.75rem 0;
+  cursor: zoom-in;
+}
+
+.prose-garden a[data-image-preview] {
+  display: block;
+  border-radius: 1.5rem;
+}
+
+.prose-garden a[data-image-preview]:hover img {
+  border-color: rgba(108, 99, 255, 0.55);
 }

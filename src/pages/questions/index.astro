@@ -1,0 +1,14 @@
+---
+import BaseLayout from '../../components/layout/BaseLayout.astro';
+import QuestionBoard from '../../components/islands/QuestionBoard.tsx';
+
+const locale = 'zh' as const;
+---
+
+<BaseLayout title="提问 | Self Blog" locale={locale}>
+  <section class="shell py-16">
+    <div class="mx-auto max-w-5xl">
+      <QuestionBoard client:load locale={locale} />
+    </div>
+  </section>
+</BaseLayout>

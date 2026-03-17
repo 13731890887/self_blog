@@ -15,6 +15,7 @@ const {
   description = 'A digital garden optimized for low-bandwidth reading and AI-assisted exploration.',
   locale
 } = Astro.props;
+const rssUrl = new URL('/rss.xml', Astro.site ?? Astro.url).toString();
 ---
 
 <!doctype html>
@@ -23,7 +24,14 @@ const {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
+    <link rel="alternate" type="application/rss+xml" title="Self Blog RSS" href={rssUrl} />
     <title>{title}</title>
+    <script is:inline>
+      (() => {
+        const stored = window.localStorage.getItem('self-blog-theme');
+        document.documentElement.dataset.theme = stored === 'soft' ? 'soft' : 'default';
+      })();
+    </script>
   </head>
   <body class="grid-fade">
     <Header locale={locale} currentPath={Astro.url.pathname} />

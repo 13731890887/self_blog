@@ -1,0 +1,14 @@
+---
+import BaseLayout from '../../../components/layout/BaseLayout.astro';
+import QuestionThread from '../../../components/islands/QuestionThread.tsx';
+
+const locale = 'en' as const;
+---
+
+<BaseLayout title="Discussion | Self Blog" locale={locale}>
+  <section class="shell py-16">
+    <div class="mx-auto max-w-4xl">
+      <QuestionThread client:load threadId={0} locale={locale} />
+    </div>
+  </section>
+</BaseLayout>

@@ -1,3 +1,6 @@
+import crypto from 'node:crypto';
+import fs from 'node:fs';
+import path from 'node:path';
 import { Hono } from 'hono';
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
 import {
@@ -8,6 +11,15 @@ import {
   verifyAdminSessionToken
 } from '../lib/admin-auth.js';
 import { createBailianChatCompletion, hasBailianConfig } from '../lib/bailian.js';
+import { db } from '../db/client.js';
+import { recordModerationEvent } from '../lib/community.js';
+import { publishArticle } from '../lib/content.js';
+import { fromProjectRoot } from '../lib/paths.js';
+import {
+  readSiteSettings,
+  sanitizeSiteSettings,
+  writeSiteSettings
+} from '../lib/site-settings.js';
 
 const admin = new Hono();
 
@@ -16,6 +28,18 @@ admin.get('/session', (c) => {
     configured: isAdminConfigured(),
     authenticated: isAuthenticated(c)
   });
+});
+
+admin.get('/settings', (c) => {
+  if (!isAdminConfigured()) {
+    return c.json({ error: 'Admin auth is not configured' }, 503);
+  }
+
+  if (!isAuthenticated(c)) {
+    return c.json({ error: 'Unauthorized' }, 401);
+  }
+
+  return c.json(readSiteSettings());
 });
 
 admin.post('/login', async (c) => {
@@ -102,6 +126,187 @@ admin.post('/assist', async (c) => {
   }
 });
 
+admin.post('/publish', async (c) => {
+  if (!isAdminConfigured()) {
+    return c.json({ error: 'Admin auth is not configured' }, 503);
+  }
+
+  if (!isAuthenticated(c)) {
+    return c.json({ error: 'Unauthorized' }, 401);
+  }
+
+  const body = await c.req.json().catch(() => ({
+    title: '',
+    content: '',
+    metaDescription: '',
+    tags: [],
+    tldr: '',
+    draft: true
+  }));
+
+  const title = typeof body.title === 'string' ? body.title.trim() : '';
+  const content = typeof body.content === 'string' ? body.content.trim() : '';
+  const metaDescription = typeof body.metaDescription === 'string' ? body.metaDescription.trim() : '';
+  const tldr = typeof body.tldr === 'string' ? body.tldr.trim() : '';
+  const draft = body.draft !== false;
+  const tags = Array.isArray(body.tags)
+    ? body.tags.filter(isString).map((tag: string) => tag.trim()).filter(Boolean)
+    : [];
+
+  if (!title || !content) {
+    return c.json({ error: 'title and content are required' }, 400);
+  }
+
+  try {
+    const result = publishArticle({
+      title,
+      content,
+      metaDescription,
+      tags,
+      tldr,
+      draft
+    });
+
+    return c.json({
+      ok: true,
+      ...result,
+      draft
+    });
+  } catch (error) {
+    return c.json({
+      error: error instanceof Error ? error.message : 'Publish failed'
+    }, 400);
+  }
+});
+
+admin.post('/settings', async (c) => {
+  if (!isAdminConfigured()) {
+    return c.json({ error: 'Admin auth is not configured' }, 503);
+  }
+
+  if (!isAuthenticated(c)) {
+    return c.json({ error: 'Unauthorized' }, 401);
+  }
+
+  const body = await c.req.json().catch(() => ({}));
+  const settings = sanitizeSiteSettings(body);
+  writeSiteSettings(settings);
+
+  return c.json({
+    ok: true,
+    settings
+  });
+});
+
+admin.post('/upload-image', async (c) => {
+  if (!isAdminConfigured()) {
+    return c.json({ error: 'Admin auth is not configured' }, 503);
+  }
+
+  if (!isAuthenticated(c)) {
+    return c.json({ error: 'Unauthorized' }, 401);
+  }
+
+  const form = await c.req.formData().catch(() => null);
+  const file = form?.get('image');
+  const alt = typeof form?.get('alt') === 'string' ? String(form?.get('alt')).trim().slice(0, 120) : '';
+
+  if (!(file instanceof File)) {
+    return c.json({ error: 'image is required' }, 400);
+  }
+
+  if (file.size === 0) {
+    return c.json({ error: 'image is empty' }, 400);
+  }
+
+  const extension = inferImageExtension(file);
+  if (!extension) {
+    return c.json({ error: 'Unsupported image format' }, 400);
+  }
+
+  const uploadsDir = fromProjectRoot('public', 'uploads');
+  fs.mkdirSync(uploadsDir, { recursive: true });
+
+  const hash = crypto.randomBytes(6).toString('hex');
+  const basename = slugifyFilename(file.name.replace(/\.[^.]+$/, '')) || 'image';
+  const filename = `${Date.now()}-${basename}-${hash}.${extension}`;
+  const filePath = path.join(uploadsDir, filename);
+  const buffer = Buffer.from(await file.arrayBuffer());
+  fs.writeFileSync(filePath, buffer);
+
+  const url = `/uploads/${filename}`;
+  return c.json({
+    ok: true,
+    url,
+    markdown: `![${alt || basename}](${url})`
+  });
+});
+
+admin.get('/community/comments', (c) => {
+  if (!isAdminConfigured()) {
+    return c.json({ error: 'Admin auth is not configured' }, 503);
+  }
+  if (!isAuthenticated(c)) {
+    return c.json({ error: 'Unauthorized' }, 401);
+  }
+
+  const rows = db.prepare(`
+    SELECT id, article_slug, username, email, content, status, created_at
+    FROM article_comments
+    ORDER BY created_at DESC
+    LIMIT 200
+  `).all();
+
+  return c.json({ comments: rows });
+});
+
+admin.get('/community/questions', (c) => {
+  if (!isAdminConfigured()) {
+    return c.json({ error: 'Admin auth is not configured' }, 503);
+  }
+  if (!isAuthenticated(c)) {
+    return c.json({ error: 'Unauthorized' }, 401);
+  }
+
+  const threads = db.prepare(`
+    SELECT id, slug, title, username, email, status, locked, created_at, last_activity_at
+    FROM question_threads
+    ORDER BY last_activity_at DESC
+    LIMIT 200
+  `).all();
+
+  return c.json({ questions: threads });
+});
+
+admin.post('/community/:targetType/:id/:action', (c) => {
+  if (!isAdminConfigured()) {
+    return c.json({ error: 'Admin auth is not configured' }, 503);
+  }
+  if (!isAuthenticated(c)) {
+    return c.json({ error: 'Unauthorized' }, 401);
+  }
+
+  const targetType = c.req.param('targetType');
+  const action = c.req.param('action');
+  const id = Number(c.req.param('id'));
+  if (!id) {
+    return c.json({ error: 'Invalid id' }, 400);
+  }
+
+  const table = targetType === 'comments' ? 'article_comments' : targetType === 'questions' ? 'question_threads' : null;
+  if (!table) {
+    return c.json({ error: 'Unknown target type' }, 400);
+  }
+
+  if (action !== 'delete') {
+    return c.json({ error: 'Unknown action' }, 400);
+  }
+
+  db.prepare(`UPDATE ${table} SET status = 'deleted', updated_at = CURRENT_TIMESTAMP WHERE id = ?`).run(id);
+  recordModerationEvent(targetType, id, action);
+  return c.json({ ok: true });
+});
+
 export default admin;
 
 function buildAssistPrompt(title: string, content: string, locale: 'zh' | 'en') {
@@ -143,4 +348,34 @@ function isString(value: unknown): value is string {
 
 function isAuthenticated(c: Parameters<typeof getCookie>[0]) {
   return verifyAdminSessionToken(getCookie(c, ADMIN_SESSION_COOKIE));
+}
+
+function inferImageExtension(file: File) {
+  const type = file.type.toLowerCase();
+  if (type === 'image/jpeg') return 'jpg';
+  if (type === 'image/png') return 'png';
+  if (type === 'image/webp') return 'webp';
+  if (type === 'image/avif') return 'avif';
+  if (type === 'image/gif') return 'gif';
+
+  const name = file.name.toLowerCase();
+  if (name.endsWith('.jpg') || name.endsWith('.jpeg')) return 'jpg';
+  if (name.endsWith('.png')) return 'png';
+  if (name.endsWith('.webp')) return 'webp';
+  if (name.endsWith('.avif')) return 'avif';
+  if (name.endsWith('.gif')) return 'gif';
+
+  return '';
+}
+
+function slugifyFilename(value: string) {
+  return value
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, ' ')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .slice(0, 60);
 }

@@ -3,9 +3,10 @@ import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../components/layout/BaseLayout.astro';
 import TableOfContents from '../../components/blog/TableOfContents.astro';
 import Tag from '../../components/ui/Tag.astro';
-import AiCompanion from '../../components/islands/AiCompanion.tsx';
+import CommentSection from '../../components/islands/CommentSection.tsx';
 import ViewCounter from '../../components/islands/ViewCounter.tsx';
-import { getLocaleCopy } from '../../lib/i18n';
+import { getLocaleCopy, localizedPath } from '../../lib/i18n';
+import { isSystemTag, resolveTagMeta } from '../../lib/site-settings';
 
 const locale = 'zh' as const;
 const copy = getLocaleCopy(locale);
@@ -20,13 +21,15 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content, headings } = await render(entry);
+const displayTags = entry.data.tags.filter((tag: string) => !isSystemTag(tag));
 ---
 
 <BaseLayout title={`${entry.data.title} | Self Blog`} description={entry.data.description} locale={locale}>
-  <section class="shell py-14">
-    <div class="mx-auto max-w-4xl">
+  <section class="py-14">
+    <div class="mx-auto max-w-[88rem] px-6">
+      <div class="mx-auto max-w-5xl">
       <div class="flex flex-wrap gap-2">
-        {entry.data.tags.map((tag: string) => <Tag label={tag} />)}
+        {displayTags.map((tag: string) => <Tag label={resolveTagMeta(tag)?.zh ?? tag} href={`${localizedPath(locale, '/articles')}?tag=${encodeURIComponent(tag)}`} />)}
       </div>
       <h1 class="mt-6 font-display text-5xl tracking-[-0.05em] text-text md:text-6xl">{entry.data.title}</h1>
       <p class="mt-5 max-w-3xl text-lg leading-8 text-muted">{entry.data.description}</p>
@@ -41,18 +44,38 @@ const { Content, headings } = await render(entry);
           <p class="mt-3 leading-7 text-text">{entry.data.tldr}</p>
         </div>
       )}
-    </div>
-  </section>
-
-  <section class="shell pb-20">
-    <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_18rem]">
-      <article class="prose-garden min-w-0 rounded-[2rem] border border-border bg-surface px-6 py-8 md:px-10">
-        <Content />
-      </article>
-      <div class="space-y-6">
-        <TableOfContents headings={headings} locale={locale} />
-        <AiCompanion client:idle locale={locale} slug={entry.slug} />
       </div>
     </div>
   </section>
+
+  <section class="pb-20">
+    <div class="mx-auto max-w-[92rem] px-8 xl:px-12">
+    <div class="grid gap-6 xl:grid-cols-[12rem_minmax(0,76rem)] xl:justify-center xl:gap-8 xl:items-start">
+      <div class="space-y-6 xl:sticky xl:top-24">
+        <TableOfContents headings={headings} locale={locale} />
+      </div>
+      <div class="min-w-0 space-y-8">
+        <article class="prose-garden rounded-[2rem] border border-border bg-surface px-6 py-8 md:px-10 xl:px-16">
+          <Content />
+        </article>
+        <CommentSection client:load slug={entry.slug} locale={locale} />
+      </div>
+    </div>
+    </div>
+  </section>
+  <script is:inline>
+    document.querySelectorAll('.prose-garden img').forEach((image) => {
+      if (!(image instanceof HTMLImageElement) || !image.src) return;
+      const parent = image.parentElement;
+      if (parent instanceof HTMLAnchorElement) return;
+
+      const link = document.createElement('a');
+      link.href = image.src;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.dataset.imagePreview = 'true';
+      image.replaceWith(link);
+      link.appendChild(image);
+    });
+  </script>
 </BaseLayout>

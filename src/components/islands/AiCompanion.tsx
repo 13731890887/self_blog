@@ -20,27 +20,25 @@ const copy = {
     label: 'AI 伴读',
     title: 'Claude Haiku SSE 伴读',
     runtime: '运行时 Island',
-    description:
-      '向 /api/ai/chat 发起请求，并通过 SSE 流式返回 token。',
     inputPlaceholder: '输入你想追问的问题，或直接点击下面的推荐问题',
     send: '发送',
     stop: '停止',
     thinking: 'AI 正在思考...',
     idle: '这里会出现流式回答。',
-    error: '请求失败，请稍后重试。'
+    error: '请求失败，请稍后重试。',
+    inputCount: '问题长度'
   },
   en: {
     label: 'AI Companion',
     title: 'Claude Haiku SSE companion',
     runtime: 'runtime island',
-    description:
-      'Posts to /api/ai/chat and renders token chunks from SSE.',
     inputPlaceholder: 'Ask a follow-up question or use one of the suggested prompts',
     send: 'Send',
     stop: 'Stop',
     thinking: 'AI is thinking...',
     idle: 'The streaming answer will appear here.',
-    error: 'Request failed. Please try again.'
+    error: 'Request failed. Please try again.',
+    inputCount: 'Prompt length'
   }
 } as const;
 
@@ -154,13 +152,13 @@ export default function AiCompanion({ locale, slug }: { locale: Locale; slug: st
         ))}
       </div>
       <div class="mt-5 rounded-2xl border border-border bg-bg/70 p-4 text-sm leading-7 text-muted">
-        <p class="mt-3">{text.description}</p>
         <textarea
-          class="mt-4 min-h-28 w-full rounded-2xl border border-border bg-surface-strong px-4 py-3 text-sm text-text outline-none transition focus:border-primary"
+          class="mt-4 min-h-28 w-full resize-none rounded-2xl border border-border bg-surface-strong px-4 py-3 text-sm text-text outline-none transition focus:border-primary"
           value={input}
           placeholder={text.inputPlaceholder}
           onInput={(event) => setInput((event.target as HTMLTextAreaElement).value)}
         />
+        <p class="mt-2 text-xs text-muted">{text.inputCount}: {input.length}</p>
         <div class="mt-4 flex items-center gap-3">
           <button
             class="rounded-full bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-[#7a72ff] disabled:cursor-not-allowed disabled:opacity-60"

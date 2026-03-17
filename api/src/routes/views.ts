@@ -3,6 +3,59 @@ import { db } from '../db/client.js';
 
 const views = new Hono();
 
+function buildExcerpt(source: string, maxLength = 180) {
+  const text = source
+    .replace(/```[\s\S]*?```/g, ' ')
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/!\[[^\]]*\]\([^)]+\)/g, ' ')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/[#>*_-]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (text.length <= maxLength) {
+    return text;
+  }
+
+  return `${text.slice(0, maxLength).trimEnd()}...`;
+}
+
+views.get('/top', (c) => {
+  const row = db.prepare(`
+    SELECT
+      a.slug,
+      a.title,
+      a.summary,
+      a.body,
+      COALESCE(v.views, 0) AS views
+    FROM articles a
+    LEFT JOIN article_views v ON v.slug = a.slug
+    ORDER BY COALESCE(v.views, 0) DESC, a.published_at DESC
+    LIMIT 1
+  `).get() as
+    | {
+        slug: string;
+        title: string;
+        summary: string | null;
+        body: string;
+        views: number;
+      }
+    | undefined;
+
+  if (!row) {
+    return c.json({ article: null });
+  }
+
+  return c.json({
+    article: {
+      slug: row.slug,
+      title: row.title,
+      excerpt: row.summary?.trim() || buildExcerpt(row.body),
+      views: row.views
+    }
+  });
+});
+
 views.get('/', (c) => {
   const slug = c.req.query('slug') ?? 'unknown';
   const upsert = db.prepare(`

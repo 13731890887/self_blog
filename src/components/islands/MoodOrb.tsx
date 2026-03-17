@@ -16,7 +16,7 @@ export default function MoodOrb() {
   }, []);
 
   return (
-    <div class="flex items-center gap-2 rounded-full border border-border px-3 py-2 text-xs uppercase tracking-[0.2em] text-muted">
+    <div class="flex items-center gap-2 rounded-full border border-border bg-surface/55 px-3 py-2 text-xs uppercase tracking-[0.24em] text-muted">
       <span class="h-2.5 w-2.5 rounded-full" style={{ background: mood.color, boxShadow: `0 0 16px ${mood.color}` }} />
       <span>{mood.label}</span>
     </div>

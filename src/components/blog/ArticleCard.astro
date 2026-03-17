@@ -1,6 +1,7 @@
 ---
 import Tag from '../ui/Tag.astro';
 import { localizedPath, type Locale } from '../../lib/i18n';
+import { isSystemTag, resolveTagMeta } from '../../lib/site-settings';
 
 interface Props {
   slug: string;
@@ -13,11 +14,12 @@ interface Props {
 }
 
 const { slug, title, description, pubDate, tags, readingTime = '5 min read', locale } = Astro.props;
+const displayTags = tags.filter((tag) => !isSystemTag(tag)).slice(0, 3);
 ---
 
-<a href={localizedPath(locale, `/articles/${slug}`)} class="panel group block rounded-3xl p-6 transition hover:-translate-y-1 hover:border-primary/70">
+<a href={localizedPath(locale, `/articles/${slug}`)} class="panel group block min-h-72 rounded-3xl p-6 transition hover:-translate-y-1 hover:border-primary/70">
   <div class="mb-5 flex flex-wrap gap-2">
-    {tags.slice(0, 3).map((tag) => <Tag label={tag} />)}
+    {displayTags.map((tag) => <Tag label={locale === 'zh' ? (resolveTagMeta(tag)?.zh ?? tag) : (resolveTagMeta(tag)?.en ?? tag)} />)}
   </div>
   <h3 class="font-display text-2xl tracking-tight text-text">{title}</h3>
   <p class="mt-3 text-sm leading-7 text-muted">{description}</p>

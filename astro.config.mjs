@@ -5,6 +5,7 @@ import preact from '@astrojs/preact';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
+  site: 'https://seqiwang.cn',
   integrations: [mdx(), preact()],
   markdown: {
     shikiConfig: {

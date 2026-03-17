@@ -1,32 +1,38 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../components/layout/BaseLayout.astro';
-import ArticleCard from '../../components/blog/ArticleCard.astro';
+import ArticleArchive from '../../components/islands/ArticleArchive.tsx';
 import { getLocaleCopy } from '../../lib/i18n';
+import { buildTagList } from '../../lib/site-settings';
 
 const locale = 'zh' as const;
 const copy = getLocaleCopy(locale);
 const articles = (await getCollection('articles', ({ data }) => !data.draft))
   .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+const tags = buildTagList(articles, locale);
 ---
 
 <BaseLayout title="文章 | Self Blog" locale={locale}>
   <section class="shell py-16">
-    <p class="text-xs uppercase tracking-[0.24em] text-secondary">{copy.articleArchive}</p>
-    <h1 class="mt-4 font-display text-5xl tracking-[-0.05em] text-text">{copy.articlesHeading}</h1>
-    <p class="mt-4 max-w-2xl leading-8 text-muted">{copy.articlesDescription}</p>
-    <div class="mt-10 grid gap-6 md:grid-cols-2">
-      {articles.map((article) => (
-        <ArticleCard
-          slug={article.slug}
-          title={article.data.title}
-          description={article.data.description}
-          pubDate={article.data.pubDate}
-          tags={article.data.tags}
-          readingTime={article.data.readingTime}
-          locale={locale}
-        />
-      ))}
+    <div class="mx-auto max-w-6xl">
+      <div class="max-w-3xl">
+        <p class="text-xs uppercase tracking-[0.24em] text-secondary">{copy.articleArchive}</p>
+        <h1 class="mt-4 font-display text-5xl tracking-[-0.05em] text-text md:text-6xl">{copy.articlesHeading}</h1>
+        <p class="mt-4 max-w-2xl leading-8 text-muted">{copy.articlesDescription}</p>
+      </div>
+      <ArticleArchive
+        client:load
+        locale={locale}
+        tags={tags}
+        articles={articles.map((article) => ({
+          slug: article.slug,
+          title: article.data.title,
+          description: article.data.description,
+          pubDate: article.data.pubDate.toISOString(),
+          tags: article.data.tags,
+          readingTime: article.data.readingTime
+        }))}
+      />
     </div>
   </section>
 </BaseLayout>

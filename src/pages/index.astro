@@ -4,10 +4,13 @@ import BaseLayout from '../components/layout/BaseLayout.astro';
 import Button from '../components/ui/Button.astro';
 import ArticleCard from '../components/blog/ArticleCard.astro';
 import SearchModal from '../components/islands/SearchModal.tsx';
+import TopArticleSpotlight from '../components/islands/TopArticleSpotlight.tsx';
 import { getLocaleCopy, localizedPath } from '../lib/i18n';
+import { getHeroCopy } from '../lib/site-settings';
 
 const locale = 'zh' as const;
 const copy = getLocaleCopy(locale);
+const hero = getHeroCopy(locale);
 const articles = (await getCollection('articles', ({ data }) => !data.draft))
   .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
   .slice(0, 3);
@@ -16,15 +19,19 @@ const articles = (await getCollection('articles', ({ data }) => !data.draft))
 <BaseLayout title="Self Blog | Digital Garden Noir" locale={locale}>
   <section class="shell py-14 md:py-24">
     <div class="panel rounded-[2rem] p-8 md:p-12">
-      <p class="text-xs uppercase tracking-[0.28em] text-secondary">{copy.homeEyebrow}</p>
-      <h1 class="mt-5 max-w-4xl font-display text-5xl leading-none tracking-[-0.05em] text-text md:text-7xl">
-        {copy.homeTitle}
-      </h1>
-      <p class="mt-6 max-w-2xl text-base leading-8 text-muted">{copy.homeDescription}</p>
-      <div class="mt-8 flex flex-wrap items-center gap-3">
-        <Button href={localizedPath(locale, '/articles')}>{copy.readArticles}</Button>
-        <Button href={localizedPath(locale, '/admin')} variant="ghost">{copy.openAdmin}</Button>
-        <SearchModal client:idle locale={locale} />
+      <div class="grid gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)] lg:items-end">
+        <div>
+          <h1 class="max-w-4xl font-display text-3xl leading-[1] tracking-[-0.05em] text-text md:text-5xl xl:text-[4.5rem]">
+            {hero.title}
+          </h1>
+          <p class="mt-6 max-w-2xl text-base leading-8 text-muted">{hero.description}</p>
+          <div class="mt-8 flex flex-wrap items-center gap-3">
+            <Button href={localizedPath(locale, '/articles')}>{copy.readArticles}</Button>
+            <Button href={localizedPath(locale, '/admin')} variant="ghost">{copy.openAdmin}</Button>
+            <SearchModal client:idle locale={locale} />
+          </div>
+        </div>
+        <TopArticleSpotlight client:idle locale={locale} />
       </div>
     </div>
   </section>

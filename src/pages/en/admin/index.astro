@@ -2,6 +2,7 @@
 import BaseLayout from '../../../components/layout/BaseLayout.astro';
 import Button from '../../../components/ui/Button.astro';
 import AdminConsole from '../../../components/islands/AdminConsole.tsx';
+import CommunityManager from '../../../components/islands/CommunityManager.tsx';
 import { getLocaleCopy, localizedPath } from '../../../lib/i18n';
 
 const locale = 'en' as const;
@@ -10,7 +11,7 @@ const copy = getLocaleCopy(locale);
 
 <BaseLayout title="Admin | Self Blog" locale={locale}>
   <section class="shell py-16">
-    <div class="panel max-w-3xl rounded-[2rem] p-8">
+    <div class="panel mx-auto max-w-4xl rounded-[2rem] p-8">
       <p class="text-xs uppercase tracking-[0.24em] text-accent-warm">{copy.protectedRoute}</p>
       <h1 class="mt-4 font-display text-5xl tracking-[-0.05em] text-text">{copy.adminTitle}</h1>
       <p class="mt-4 max-w-2xl leading-8 text-muted">{copy.adminLiveDescription}</p>
@@ -38,6 +39,9 @@ const copy = getLocaleCopy(locale);
         <AdminConsole client:load locale={locale} />
       </div>
       <div class="mt-8">
+        <CommunityManager client:load locale={locale} />
+      </div>
+      <div class="mt-10 flex justify-center">
         <Button href={localizedPath(locale, '/')}>{copy.returnHome}</Button>
       </div>
     </div>
