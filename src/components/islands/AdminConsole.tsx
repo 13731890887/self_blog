@@ -14,6 +14,8 @@ type PublishResult = {
   slug: string;
   href: string;
   draft: boolean;
+  rebuildStarted?: boolean;
+  rebuildLogPath?: string;
 };
 
 type SiteSettings = {
@@ -49,6 +51,9 @@ const copy = {
     tagPlaceholder: '点击选择标签',
     uploadImage: '上传图片',
     uploadingImage: '上传中...',
+    importDocument: '导入 Word',
+    importingDocument: '导入中...',
+    importDocumentHint: '支持 .docx，导入后会把正文转成 Markdown 填入编辑器。',
     insertImage: '插入图片',
     imageAltPlaceholder: '图片说明（可选）',
     submit: '生成建议',
@@ -72,8 +77,9 @@ const copy = {
     contentCount: '正文长度',
     titleCount: '标题长度',
     publishSuccessDraft: '草稿已保存',
-    publishSuccessLive: '文章已发布',
-    publishHint: '提交后会在 src/content/articles 中生成 MDX 文件。',
+    publishSuccessLive: '文章已发布，站点正在重建。',
+    publishSuccessLivePending: '文章已发布。当前已有重建任务在进行中，请稍后刷新站点查看。',
+    publishHint: '草稿会直接写入 src/content/articles；正式发布后会自动触发一次站点重建。',
     heroEditor: '首页文案',
     heroTitleZh: '中文标题',
     heroDescriptionZh: '中文副标题',
@@ -102,6 +108,9 @@ const copy = {
     tagPlaceholder: 'Click to select tags',
     uploadImage: 'Upload image',
     uploadingImage: 'Uploading...',
+    importDocument: 'Import Word',
+    importingDocument: 'Importing...',
+    importDocumentHint: 'Supports .docx. The document will be converted to Markdown and inserted into the editor.',
     insertImage: 'Insert image',
     imageAltPlaceholder: 'Image alt text (optional)',
     submit: 'Generate suggestions',
@@ -125,8 +134,9 @@ const copy = {
     contentCount: 'Content length',
     titleCount: 'Title length',
     publishSuccessDraft: 'Draft saved',
-    publishSuccessLive: 'Article published',
-    publishHint: 'Submitting creates an MDX file under src/content/articles.',
+    publishSuccessLive: 'Article published and site rebuild started.',
+    publishSuccessLivePending: 'Article published. Another rebuild is already in progress, so refresh the site shortly.',
+    publishHint: 'Drafts are written to src/content/articles. Publishing automatically starts a site rebuild.',
     heroEditor: 'Homepage copy',
     heroTitleZh: 'Chinese title',
     heroDescriptionZh: 'Chinese description',
@@ -152,6 +162,7 @@ export default function AdminConsole({ locale }: { locale: Locale }) {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [imageAlt, setImageAlt] = useState('');
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [importingDocument, setImportingDocument] = useState(false);
   const [result, setResult] = useState<AssistResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [publishing, setPublishing] = useState(false);
@@ -290,9 +301,6 @@ export default function AdminConsole({ locale }: { locale: Locale }) {
       setSelectedTags([]);
       setPublishResult(next);
 
-      if (!draft && next.href) {
-        await navigateToPublishedArticle(next.href, locale);
-      }
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : text.requestFailed);
     } finally {
@@ -365,6 +373,50 @@ export default function AdminConsole({ locale }: { locale: Locale }) {
       setError(requestError instanceof Error ? requestError.message : text.requestFailed);
     } finally {
       setUploadingImage(false);
+    }
+  }
+
+  async function handleDocumentImport(event: Event) {
+    const target = event.target as HTMLInputElement;
+    const file = target.files?.[0];
+    target.value = '';
+
+    if (!file) {
+      return;
+    }
+
+    setImportingDocument(true);
+    setError('');
+
+    try {
+      const form = new FormData();
+      form.set('document', file);
+
+      const response = await fetch('/api/admin/import-docx', {
+        method: 'POST',
+        body: form
+      });
+
+      const payload = await response.json().catch(() => null) as { error?: string; title?: string; content?: string } | null;
+      if (!response.ok || !payload?.content) {
+        throw new Error(payload?.error ?? text.requestFailed);
+      }
+
+      if (!title.trim() && payload.title) {
+        setTitle(payload.title);
+      }
+
+      setContent((current) => {
+        if (!current.trim()) {
+          return payload.content!;
+        }
+
+        return insertMarkdownBlock(current, payload.content!);
+      });
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : text.requestFailed);
+    } finally {
+      setImportingDocument(false);
     }
   }
 
@@ -542,7 +594,18 @@ export default function AdminConsole({ locale }: { locale: Locale }) {
                   onChange={(event) => void handleImageUpload(event)}
                 />
               </label>
+              <label class="inline-flex cursor-pointer items-center gap-2 rounded-full border border-border px-4 py-2 text-sm text-text transition hover:border-primary hover:text-primary">
+                <span>{importingDocument ? text.importingDocument : text.importDocument}</span>
+                <input
+                  type="file"
+                  accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                  class="hidden"
+                  disabled={importingDocument}
+                  onChange={(event) => void handleDocumentImport(event)}
+                />
+              </label>
             </div>
+            <p class="text-xs leading-6 text-muted">{text.importDocumentHint}</p>
           </label>
           <div class="grid gap-3">
             <span class="text-sm text-text">{text.tagLabel}</span>
@@ -584,7 +647,11 @@ export default function AdminConsole({ locale }: { locale: Locale }) {
         {error && <p class="mt-4 text-sm text-accent-warm">{error}</p>}
         {publishResult && (
           <div class="mt-4 rounded-2xl border border-secondary/30 bg-secondary/10 px-4 py-3 text-sm text-text">
-            <p>{publishResult.draft ? text.publishSuccessDraft : text.publishSuccessLive}</p>
+            <p>
+              {publishResult.draft
+                ? text.publishSuccessDraft
+                : (publishResult.rebuildStarted === false ? text.publishSuccessLivePending : text.publishSuccessLive)}
+            </p>
             <a href={publishResult.href} class="mt-1 inline-block text-secondary">{publishResult.href}</a>
           </div>
         )}
@@ -720,37 +787,4 @@ function buildBlockInsertion(prefix: string, suffix: string, snippet: string) {
   const needsTrailingBreak = suffix.length > 0 && !suffix.startsWith('\n\n');
 
   return `${needsLeadingBreak ? '\n\n' : ''}${body}${needsTrailingBreak ? '\n\n' : '\n'}`;
-}
-
-async function navigateToPublishedArticle(href: string, locale: Locale) {
-  const fallback = locale === 'zh' ? '/articles' : '/en/articles';
-
-  for (let attempt = 0; attempt < 20; attempt += 1) {
-    try {
-      const response = await fetch(href, {
-        method: 'GET',
-        headers: {
-          Accept: 'text/html'
-        },
-        cache: 'no-store'
-      });
-
-      if (response.ok) {
-        window.location.assign(href);
-        return;
-      }
-    } catch {
-      // Keep polling until Astro registers the new route.
-    }
-
-    await sleep(300);
-  }
-
-  window.location.assign(fallback);
-}
-
-function sleep(ms: number) {
-  return new Promise((resolve) => {
-    window.setTimeout(resolve, ms);
-  });
 }

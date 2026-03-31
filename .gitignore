@@ -19,6 +19,14 @@ pnpm-debug.log*
 
 # local sqlite data
 api/data/
+shared/*.db
+shared/*.db-shm
+shared/*.db-wal
+shared/*.log
+shared/*.lock
+
+# server-only large artifacts
+public/uploads/*.tar.gz
 
 # macOS-specific files
 .DS_Store

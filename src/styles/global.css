@@ -72,6 +72,19 @@ a {
   color: inherit;
 }
 
+.site-header {
+  transition:
+    transform 220ms ease,
+    opacity 220ms ease,
+    box-shadow 220ms ease;
+  will-change: transform;
+}
+
+.site-header.site-header-hidden {
+  transform: translateY(calc(-100% - 1rem));
+  opacity: 0.96;
+}
+
 ::selection {
   background: rgba(108, 99, 255, 0.35);
 }

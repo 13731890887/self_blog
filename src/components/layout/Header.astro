@@ -16,7 +16,7 @@ function isActive(path: string) {
 }
 ---
 
-<header class="sticky top-0 z-30 border-b border-border/80 bg-bg/85 backdrop-blur">
+<header data-site-header class="site-header sticky top-0 z-30 border-b border-border/80 bg-bg/85 backdrop-blur">
   <div class="shell grid grid-cols-[1fr_auto_1fr] items-center gap-6 py-4">
     <a href={localizedPath(locale, '/')} class="group inline-flex items-center justify-self-start gap-3 -ml-4 lg:-ml-8">
       <span class="font-display text-2xl uppercase tracking-[0.22em] text-text transition group-hover:text-primary">{copy.brand}</span>
@@ -36,3 +36,30 @@ function isActive(path: string) {
     </div>
   </div>
 </header>
+
+<script is:inline>
+  (() => {
+    const header = document.querySelector('[data-site-header]');
+    if (!header) return;
+
+    let lastY = window.scrollY;
+
+    const syncHeader = () => {
+      const nextY = window.scrollY;
+      const delta = nextY - lastY;
+
+      if (nextY <= 24) {
+        header.classList.remove('site-header-hidden');
+      } else if (delta > 8) {
+        header.classList.add('site-header-hidden');
+      } else if (delta < -8) {
+        header.classList.remove('site-header-hidden');
+      }
+
+      lastY = nextY;
+    };
+
+    window.addEventListener('scroll', syncHeader, { passive: true });
+    syncHeader();
+  })();
+</script>
