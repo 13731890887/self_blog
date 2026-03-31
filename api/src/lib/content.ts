@@ -17,6 +17,12 @@ type UpdateInput = PublishInput & {
   slug: string;
 };
 
+type RenameInput = {
+  slug: string;
+  nextSlug: string;
+  title?: string;
+};
+
 const articlesDir = fromProjectRoot('src', 'content', 'articles');
 
 export type ArticleListItem = {
@@ -44,7 +50,7 @@ export function publishArticle(input: PublishInput) {
     throw new Error('An article with the same slug already exists');
   }
 
-  const source = buildMdxSource({
+  const source = renderArticleSource({
     ...input,
     slug
   });
@@ -123,11 +129,10 @@ export function getArticle(slug: string): ArticleDetail {
 
 export function updateArticle(input: UpdateInput) {
   const existing = getArticle(input.slug);
-  const source = buildMdxSource({
+  const source = renderArticleSource({
     ...input,
-    slug: existing.slug,
-    pubDate: existing.pubDate || new Date().toISOString().slice(0, 10)
-  });
+    slug: existing.slug
+  }, existing.pubDate || new Date().toISOString().slice(0, 10));
 
   fs.writeFileSync(existing.filePath, source, 'utf8');
 
@@ -135,6 +140,57 @@ export function updateArticle(input: UpdateInput) {
     slug: existing.slug,
     filePath: existing.filePath,
     href: `/articles/${existing.slug}`
+  };
+}
+
+export function renameArticle(input: RenameInput) {
+  const existing = getArticle(input.slug);
+  const nextSlug = createSlug(input.nextSlug);
+  const nextFilePath = path.join(articlesDir, `${nextSlug}.mdx`);
+
+  if (existing.slug === nextSlug) {
+    if (input.title?.trim() && input.title.trim() !== existing.title) {
+      updateArticle({
+        slug: existing.slug,
+        title: input.title.trim(),
+        content: existing.content,
+        metaDescription: existing.description,
+        tags: existing.tags,
+        tldr: existing.tldr,
+        draft: existing.draft
+      });
+    }
+
+    return {
+      slug: existing.slug,
+      previousSlug: existing.slug,
+      filePath: existing.filePath,
+      href: `/articles/${existing.slug}`
+    };
+  }
+
+  if (fs.existsSync(nextFilePath)) {
+    throw new Error('An article with the target slug already exists');
+  }
+
+  const source = renderArticleSource({
+    slug: nextSlug,
+    title: input.title?.trim() || existing.title,
+    content: existing.content,
+    metaDescription: existing.description,
+    tags: existing.tags,
+    tldr: existing.tldr,
+    draft: existing.draft
+  }, existing.pubDate || new Date().toISOString().slice(0, 10));
+
+  fs.writeFileSync(nextFilePath, source, 'utf8');
+  fs.unlinkSync(existing.filePath);
+
+  return {
+    slug: nextSlug,
+    previousSlug: existing.slug,
+    filePath: nextFilePath,
+    href: `/articles/${nextSlug}`
   };
 }
 
@@ -151,7 +207,10 @@ export function createSlug(value: string) {
   return ascii || `note-${Date.now()}`;
 }
 
-function buildMdxSource(input: PublishInput & { slug: string; pubDate?: string }) {
+export function renderArticleSource(
+  input: PublishInput & { slug: string },
+  pubDate = new Date().toISOString().slice(0, 10)
+) {
   const content = normalizeMarkdownContent(input.content);
   const description = input.metaDescription?.trim() || summarizeContent(content);
   const normalizedTags = [...new Set((input.tags ?? []).map((tag) => normalizeTag(tag)).filter(Boolean))];
@@ -163,7 +222,7 @@ function buildMdxSource(input: PublishInput & { slug: string; pubDate?: string }
     '---',
     `title: ${toYamlString(input.title)}`,
     `description: ${toYamlString(description)}`,
-    `pubDate: ${input.pubDate || new Date().toISOString().slice(0, 10)}`,
+    `pubDate: ${pubDate}`,
     'tags:',
     ...tags.map((tag) => `  - ${toYamlString(tag)}`),
     `readingTime: ${toYamlString(readingTime)}`,

@@ -13,6 +13,7 @@
     "dev": "astro dev",
     "dev:web": "astro dev",
     "dev:api": "npm --workspace api run dev",
+    "ai:cli": "npm --workspace api run cli --",
     "build": "npm run build:web && npm run build:api",
     "build:web": "astro build",
     "build:api": "npm --workspace api run build",

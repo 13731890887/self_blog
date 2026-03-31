@@ -11,6 +11,18 @@ type RebuildTriggerResult = {
   logPath: string;
 };
 
+export type RebuildStatus = {
+  running: boolean;
+  logPath: string;
+  lockPath: string;
+  logExists: boolean;
+};
+
+export type RebuildLog = {
+  logPath: string;
+  lines: string[];
+};
+
 export function triggerSiteRebuild(): RebuildTriggerResult {
   fs.mkdirSync(sharedDir, { recursive: true });
 
@@ -56,6 +68,36 @@ export function triggerSiteRebuild(): RebuildTriggerResult {
   return {
     started: true,
     logPath
+  };
+}
+
+export function readSiteRebuildStatus(): RebuildStatus {
+  fs.mkdirSync(sharedDir, { recursive: true });
+
+  return {
+    running: fs.existsSync(lockPath),
+    logPath,
+    lockPath,
+    logExists: fs.existsSync(logPath)
+  };
+}
+
+export function readSiteRebuildLog(maxLines = 80): RebuildLog {
+  fs.mkdirSync(sharedDir, { recursive: true });
+
+  if (!fs.existsSync(logPath)) {
+    return {
+      logPath,
+      lines: []
+    };
+  }
+
+  const source = fs.readFileSync(logPath, 'utf8');
+  const lines = source.split(/\r?\n/).filter(Boolean);
+
+  return {
+    logPath,
+    lines: lines.slice(-Math.max(1, maxLines))
   };
 }
 

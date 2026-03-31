@@ -2,6 +2,7 @@ import { serve } from '@hono/node-server';
 import { Hono } from 'hono';
 import ai from './routes/ai.js';
 import admin from './routes/admin.js';
+import cli from './routes/cli.js';
 import search from './routes/search.js';
 import comments from './routes/comments.js';
 import questions from './routes/questions.js';
@@ -15,6 +16,7 @@ initializeDatabase();
 
 app.get('/health', (c) => c.json({ ok: true }));
 app.route('/api/admin', admin);
+app.route('/api/cli', cli);
 app.route('/api/ai', ai);
 app.route('/api/comments', comments);
 app.route('/api/questions', questions);

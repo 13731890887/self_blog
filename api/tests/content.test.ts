@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createSlug, deleteArticle, listArticles, publishArticle } from '../src/lib/content.js';
+import { createSlug, deleteArticle, listArticles, publishArticle, renameArticle, renderArticleSource } from '../src/lib/content.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fromProjectRoot } from '../src/lib/paths.js';
@@ -83,4 +83,37 @@ test('deleteArticle removes an article file and returns draft flag', () => {
   assert.equal(deleted.slug, result.slug);
   assert.equal(deleted.draft, true);
   assert.equal(fs.existsSync(filePath), false);
+});
+
+test('renameArticle renames the file and keeps article content', () => {
+  const title = `rename-article-${Date.now()}`;
+  const result = publishArticle({
+    title,
+    content: 'Rename me',
+    tags: ['alpha'],
+    draft: true
+  });
+
+  const renamed = renameArticle({
+    slug: result.slug,
+    nextSlug: `${result.slug}-new`
+  });
+
+  assert.equal(renamed.slug, `${result.slug}-new`);
+  assert.equal(fs.existsSync(path.join(fromProjectRoot('src', 'content', 'articles'), `${result.slug}.mdx`)), false);
+  assert.equal(fs.existsSync(path.join(fromProjectRoot('src', 'content', 'articles'), `${renamed.slug}.mdx`)), true);
+
+  fs.unlinkSync(path.join(fromProjectRoot('src', 'content', 'articles'), `${renamed.slug}.mdx`));
+});
+
+test('renderArticleSource preserves explicit publication date', () => {
+  const source = renderArticleSource({
+    slug: 'demo',
+    title: 'Demo',
+    content: 'Body',
+    tags: ['note'],
+    draft: false
+  }, '2026-03-31');
+
+  assert.match(source, /pubDate: 2026-03-31/);
 });
