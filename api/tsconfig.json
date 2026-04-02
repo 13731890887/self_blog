@@ -9,6 +9,9 @@
     "skipLibCheck": true
   },
   "include": [
-    "src/**/*.ts"
+    "src/index.ts",
+    "src/db/**/*.ts",
+    "src/lib/**/*.ts",
+    "src/routes/**/*.ts"
   ]
 }
